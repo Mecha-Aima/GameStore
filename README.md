@@ -2,7 +2,8 @@
 
 This README provides step-by-step instructions to clone the Game Store project, install and configure the Flask backend and React Vite frontend, view the OpenAPI contract, and test the API routes locally.  ([Getting Started - Vite](https://vite.dev/guide/?utm_source=chatgpt.com), [Quickstart — Flask Documentation (3.1.x)](https://flask.palletsprojects.com/en/stable/quickstart/?utm_source=chatgpt.com))
 
----
+---  
+
 
 ## Prerequisites
 
@@ -12,7 +13,8 @@ This README provides step-by-step instructions to clone the Game Store project, 
 4. **git** – To clone the repository.  
 5. **SQL Server** – As your database; ensure it’s running and reachable.  
 
----
+---  
+
 
 ## 1. Clone the Repository
 
@@ -21,7 +23,8 @@ git clone https://github.com/Mecha-Aima/GameStore.git
 cd game-store
 ```
 
----
+---  
+
 
 ## 2. Backend Setup (Flask)
 
@@ -60,8 +63,7 @@ Install python-dotenv if needed:
 pip install python-dotenv
 ```
 
----
-
+---  
 
 
 ## 3. Frontend Setup (React + Vite)
@@ -82,7 +84,8 @@ This command bootstraps a React project with Vite.  ([Build a React app from Scr
 npm install
 ```
 
----
+---  
+
 
 ## 4. Running the Application
 
@@ -104,7 +107,8 @@ npm run dev
 ```  
 This starts Vite’s dev server on `http://localhost:3000`. 
 
----
+---  
+
 
 ## 5. Viewing the API Contract
 
@@ -131,7 +135,8 @@ Use this document to:
 - Coordinate frontend-backend responsibilities
 - Verify that Flask routes align with frontend expectations
 
----
+---  
+
 
 ## 6. Testing the API Routes
 
@@ -154,4 +159,3 @@ curl -X POST http://127.0.0.1:5000/api/cart \
 - Implement authentication, authorization, and error handling.  
 - Expand API contract with response schemas and security schemes.  
 
-Happy coding!

@@ -1,4 +1,4 @@
-## Summary
+## Summary.
 
 This README provides step-by-step instructions to clone the Game Store project, install and configure the Flask backend and React Vite frontend, view the OpenAPI contract, and test the API routes locally.  ([Getting Started - Vite](https://vite.dev/guide/?utm_source=chatgpt.com), [Quickstart — Flask Documentation (3.1.x)](https://flask.palletsprojects.com/en/stable/quickstart/?utm_source=chatgpt.com))
 
@@ -22,7 +22,6 @@ This README provides step-by-step instructions to clone the Game Store project, 
 git clone https://github.com/Mecha-Aima/GameStore.git
 cd game-store
 ```
-
 ---  
 
 

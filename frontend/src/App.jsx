@@ -1,4 +1,7 @@
 import { useEffect } from 'react';
+import Home from './pages/Home';
+import Footer from './components/Footer';
+import './App.css';
 
 function App() {
   useEffect(() => {
@@ -11,11 +14,9 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-teal-20 text-navy-80 min-h-screen flex flex-col justify-center items-center">
-      <h1 className="text-5xl font-bold underline mb-4">Hello world!</h1>
-      <p className=" text-xl">
-        This is a custom themed component.
-      </p>
+    <div>
+      <Home />
+      <Footer />
     </div>
   );
 }

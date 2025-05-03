@@ -1,0 +1,9 @@
+nav {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.max-w-screen-xl {
+  max-width: 100% !important;
+  width: 100%;
+}

@@ -7,3 +7,15 @@ nav {
   max-width: 100% !important;
   width: 100%;
 }
+
+.signup-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color-teal-50);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+

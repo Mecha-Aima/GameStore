@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './Header.css'
 import logo from '../assets/logo/logo.png'
-
+import chevronRight from '../assets/icons/chevron-right.svg'
 const Header = () => {
 
     const [state, setState] = useState(false)
@@ -32,7 +32,7 @@ const Header = () => {
                         />
                     </a>
                     <div className="md:hidden">
-                        <button className="menu-btn text-gray-500 hover:text-gray-800"
+                        <button className="bg-dark-bg-2 menu-btn text-teal-60 hover:text-gray-500"
                             onClick={() => setState(!state)}
                         >
                             {
@@ -67,11 +67,9 @@ const Header = () => {
                         <a href="#" className="block text-white hover:text-gray-200 text-base">
                             Log in
                         </a>
-                        <a href="#" className="flex items-center justify-center gap-x-1 py-2 px-4 text-gray-800 font-medium bg-teal-50 hover:bg-teal-30 active:bg-teal-200 rounded-full md:inline-flex text-base">
+                        <a href="#" className="signup-link text-base text-black">
                             Sign Up
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                            </svg>
+                            <img src={chevronRight} alt="chevron right" className="w-5 h-5" />
                         </a>
                     </div>
                 </div>

@@ -14,6 +14,9 @@ export default {
           // etc.
         },
       },
+    fontFamily: {
+        elianto: ['Elianto', 'sans-serif'],
+    }
     },
     plugins: [],
   }

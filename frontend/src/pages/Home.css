@@ -1,0 +1,8 @@
+.button-primary {
+    background-color: var(--color-teal-50);
+    color: var(--color-dark-bg);
+}
+
+.button-primary:hover {
+    background-color: var(--color-teal-80);
+}

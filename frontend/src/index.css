@@ -60,7 +60,17 @@ button:focus-visible {
   }
 }
 
+
+@font-face {
+  font-family: MyLodon;
+  src: url('./assets/fonts/Mylodon-Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @theme {
+  --font-myLodon: MyLodon;
+
   --color-teal-10: #8ecae6;
   --color-teal-20: #72bebc;
   --color-teal-30: #5db5b2;

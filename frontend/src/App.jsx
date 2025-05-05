@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import Auth from './pages/Auth'
+import {BrowserRouter as Router,Routes,Route} from "react-router-dom";
 
 function App() {
   useEffect(() => {
@@ -10,7 +12,14 @@ function App() {
       .catch(err => console.error('Fetch error:', err));
   }, []);
 
-  return <div>CORS is working!</div>;
+  return (
+    <Router>
+      <Routes>
+        <Route path='/auth' element={<Auth/>}/>
+      </Routes>
+
+    </Router>
+  );
 }
 
 export default App;

@@ -2,6 +2,69 @@
 Product Details Page
 Game Showcase: Large cover image carousel or static image
 Details Panel: Title, developer/publisher info, genre tags, platform icons
-Description: Expandable text block with scroll or “Read more”
-Purchase Box: Price, quantity selector, “Add to Cart” button, stock availability
+Description: Expandable text block with scroll or "Read more"
+Purchase Box: Price, quantity selector, "Add to Cart" button, stock availability
 */
+
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import img from "../assets/images/game-covers/echo-drift.png";
+import pc from "../assets/icons/pc.svg";
+import xbox from "../assets/icons/xbox.svg";
+import InfoBadge from "../components/Badges";
+
+const game = {
+    id: 1,
+    title: "Echo Drift",
+    genre: "Racing",
+    description: "In a future where reality is unstable, elite pilots compete in high-speed hoverbike races across fractured dimensions. As rookie drifter Kael, you'll master impossible tracks, manipulate gravity, and use dimensional glitches to outmaneuver rivals. With a dynamic weather system and shifting terrains, no race is ever the same.",
+    platform: ["PC", "Xbox"],
+    release_date: "2024-05-07",
+    price: 2499.99,
+    image: img,
+}
+
+
+const ProductDetails = () => {
+    return (
+        <div className="min-h-screen bg-neutral-900">
+            <Header />
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-12 py-16 px-4 md:px-8 items-center my-24">
+                <div className="flex-1 flex items-start justify-center h-full">
+                    <img 
+                        src={game.image} 
+                        alt={game.title} 
+                        className="rounded-2xl object-cover w-full max-w-xl shadow-lg h-full max-h-[800px]"
+                    />
+                </div>
+                <div className="flex-1 flex flex-col items-start justify-between h-full max-h-[800px] gap-8 max-w-[">
+                    <div className="flex flex-col gap-2">
+                        <h1 className="text-4xl font-bold text-white mb-4 text-left">{game.title}</h1>
+                        <p className="text-neutral-200 text-md text-left leading-relaxed">
+                            {game.description}
+                        </p> 
+                    </div>
+                    <div>
+                        <h5 className="font-semibold text-white text-left mb-2 ">Platform:</h5>
+                        {game.platform.includes("PC") && <span className="inline-flex items-start mr-4 text-gray-400"><img src={pc} alt="PC" className="w-6 h-6 mr-1 inline" />PC</span>}
+                        {game.platform.includes("Xbox") && <span className="inline-flex items-start text-gray-400"><img src={xbox} alt="Xbox" className="w-6 h-6 mr-1 inline" />Console</span>}
+                    </div>
+                    <div className="text-neutral-400 mb-2 text-left">
+                        <div>Release Date: <span className="text-white ml-2">{game.release_date}</span></div>
+                        <div>Genre: <span className="text-white ml-2 inline-block mt-2"><InfoBadge genre={game.genre} /></span></div>
+                    </div>
+                    <div className="bg-neutral-800 rounded-2xl p-8 flex flex-col gap-4 w-full mt-4 shadow-lg">
+                        <div className="flex items-center justify-between">
+                            <span className="text-lg font-bold text-white">Price: Rs. {game.price.toFixed(2)}</span>
+                            <span className="text-green-400 font-medium">In Stock</span>
+                        </div>
+                        <button className="bg-teal-400 hover:bg-teal-600 text-black text-lg font-semibold rounded-xl py-3">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+            <Footer />
+        </div>
+    )
+}
+
+export default ProductDetails;

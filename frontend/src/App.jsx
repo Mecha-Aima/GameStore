@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import Home from './pages/Home';
+import ProductDetails from './pages/ProductDetails';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 
 function App() {
@@ -13,9 +15,12 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <Home />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -1,0 +1,161 @@
+/* Auth.css - Matching PLAYTRIX dark theme with teal accents */
+
+:root {
+  --color-dark-bg: #121212;
+  --color-dark-bg-2: #1e1e1e;
+  --color-teal-30: #4fd1c5;
+  --color-teal-50: #38b2ac;
+  --color-teal-80: #2c7a7b;
+  --color-navy-20: #2d3748;
+  --color-navy-80: #e2e8f0;
+  --color-mint-10: #1a202c;
+  --color-red-500: #f56565;
+  --font-myLodon: 'myLodon', sans-serif;
+}
+
+.auth-container {
+  background-color: var(--color-dark-bg);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.auth-card {
+  background-color: var(--color-dark-bg-2);
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid #2d3748;
+}
+
+.auth-title {
+  font-family: var(--font-myLodon);
+  font-size: 2.25rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.auth-input {
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-dark-bg);
+  border: 1px solid var(--color-navy-20);
+  color: #ffffff;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--color-teal-50);
+  box-shadow: 0 0 0 2px rgba(56, 178, 172, 0.3);
+}
+
+.auth-input::placeholder {
+  color: #718096;
+}
+
+.auth-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #cbd5e0;
+  font-size: 0.875rem;
+  user-select: none;
+}
+
+.auth-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  accent-color: var(--color-teal-50);
+}
+
+.auth-button {
+  background-color: var(--color-teal-50);
+  color: var(--color-dark-bg);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: var(--color-teal-80);
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-toggle {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #cbd5e0;
+  font-size: 0.875rem;
+}
+
+.auth-toggle-button {
+  color: var(--color-teal-30);
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.auth-toggle-button:hover {
+  text-decoration: underline;
+}
+
+.auth-error {
+  color: var(--color-red-500);
+  font-size: 0.75rem;
+  margin-top: -0.75rem;
+}
+
+.auth-logo {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-logo img {
+  height: 3rem;
+  width: auto;
+}
+
+/* Animation for form transition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-form {
+  animation: fadeIn 0.3s ease-out;
+}

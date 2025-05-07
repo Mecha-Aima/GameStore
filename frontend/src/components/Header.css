@@ -1,6 +1,8 @@
 nav {
   width: 100%;
   box-sizing: border-box;
+  background-color: var(--color-dark-bg);
+  z-index: 100;
 }
 
 .max-w-screen-xl {

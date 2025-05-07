@@ -1,0 +1,13 @@
+.card-btn {
+    background-color: var(--color-teal-50);
+}
+
+.game-card {
+    background-color: var(--color-dark-bg);
+    width: 100%; 
+    padding: 12px 4px;
+}
+
+.card-content {
+    background-color: var(--color-dark-bg-2);
+}

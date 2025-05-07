@@ -20,7 +20,7 @@ const Header = () => {
     }, [])
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 bg-dark-bg py-4 md:text-sm ${state ? "shadow-lg rounded-xl border mx-2 mt-2 md:shadow-none md:border-none md:mx-2 md:mt-0" : ""}`}>
+        <nav className={`fixed top-0 left-0 right-0 py-4 md:text-sm ${state ? "shadow-lg rounded-xl border mx-2 mt-2 md:shadow-none md:border-none md:mx-2 md:mt-0" : ""}`}>
             <div className="gap-x-8 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
                 <div>
                     <a href="#">

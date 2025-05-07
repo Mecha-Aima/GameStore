@@ -1,15 +1,9 @@
-/* 
-Login & Registration Page
-
-Tab Toggle: Switch between “Login” and “Register” forms
-Form Fields
-Login: Email, Password, “Remember me” checkbox
-Register: Username, Email, Password, Confirm Password
-Validation Messages: Inline errors for required fields, email format, password strength (e.g. ≥ 8 chars, mix of letters & numbers)
-Submit Button: Disabled until form is valid
-*/
 import './Auth.css';
 import React, { useState } from "react";
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+// You can import your logo here
+// import logo from '../assets/images/logo.png';
 
 // ------------------ Utilities ------------------
 const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
@@ -27,6 +21,11 @@ function useForm(initialValues, validateFn) {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
   const validate = () => {
@@ -53,44 +52,55 @@ function LoginForm() {
 
   const { email, password, rememberMe } = values;
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      console.log("Login form valid, submitting:", values);
+      // Handle form submission here
+    }
+  };
+
   return (
-    <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-      <input
-        name="email"
-        value={email}
-        onChange={handleChange}
-        placeholder="Email"
-        type="email"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div>
+        <input
+          name="email"
+          value={email}
+          onChange={handleChange}
+          placeholder="Email"
+          type="email"
+          className="auth-input"
+        />
+        {errors.email && <p className="auth-error">{errors.email}</p>}
+      </div>
 
-      <input
-        name="password"
-        value={password}
-        onChange={handleChange}
-        placeholder="Password"
-        type="password"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.password && (
-        <p className="text-red-500 text-sm">{errors.password}</p>
-      )}
+      <div>
+        <input
+          name="password"
+          value={password}
+          onChange={handleChange}
+          placeholder="Password"
+          type="password"
+          className="auth-input"
+        />
+        {errors.password && <p className="auth-error">{errors.password}</p>}
+      </div>
 
-      <label className="flex items-center gap-2 text-sm">
+      <label className="auth-checkbox-label">
         <input
           name="rememberMe"
           type="checkbox"
           checked={rememberMe}
           onChange={handleChange}
+          className="auth-checkbox"
         />
         Remember Me
       </label>
 
       <button
-        onClick={validate}
-        disabled={!email || !password || Object.keys(errors).length > 0}
-        className="bg-teal-50 text-white font-semibold py-2 rounded hover:bg-teal-60 transition disabled:opacity-50"
+        type="submit"
+        disabled={!email || !password}
+        className="auth-button"
       >
         Login
       </button>
@@ -114,8 +124,7 @@ function SignupForm() {
       else if (!isValidEmail(email)) errs.email = "Invalid email format";
       if (!password) errs.password = "Password is required";
       else if (!isStrongPassword(password))
-        errs.password =
-          "Password must be 8+ chars, with letters & numbers";
+        errs.password = "Password must be 8+ chars, with letters & numbers";
       if (confirmPassword !== password)
         errs.confirmPassword = "Passwords do not match";
       return errs;
@@ -124,67 +133,67 @@ function SignupForm() {
 
   const { username, email, password, confirmPassword } = values;
 
-  const isFormValid =
-    username &&
-    email &&
-    password &&
-    confirmPassword &&
-    isValidEmail(email) &&
-    isStrongPassword(password) &&
-    password === confirmPassword;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      console.log("Signup form valid, submitting:", values);
+      // Handle form submission here
+    }
+  };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-      <input
-        name="username"
-        value={username}
-        onChange={handleChange}
-        placeholder="Username"
-        type="text"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.username && (
-        <p className="text-red-500 text-sm">{errors.username}</p>
-      )}
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div>
+        <input
+          name="username"
+          value={username}
+          onChange={handleChange}
+          placeholder="Username"
+          type="text"
+          className="auth-input"
+        />
+        {errors.username && <p className="auth-error">{errors.username}</p>}
+      </div>
 
-      <input
-        name="email"
-        value={email}
-        onChange={handleChange}
-        placeholder="Email"
-        type="email"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+      <div>
+        <input
+          name="email"
+          value={email}
+          onChange={handleChange}
+          placeholder="Email"
+          type="email"
+          className="auth-input"
+        />
+        {errors.email && <p className="auth-error">{errors.email}</p>}
+      </div>
 
-      <input
-        name="password"
-        value={password}
-        onChange={handleChange}
-        placeholder="Password"
-        type="password"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.password && (
-        <p className="text-red-500 text-sm">{errors.password}</p>
-      )}
+      <div>
+        <input
+          name="password"
+          value={password}
+          onChange={handleChange}
+          placeholder="Password"
+          type="password"
+          className="auth-input"
+        />
+        {errors.password && <p className="auth-error">{errors.password}</p>}
+      </div>
 
-      <input
-        name="confirmPassword"
-        value={confirmPassword}
-        onChange={handleChange}
-        placeholder="Confirm Password"
-        type="password"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.confirmPassword && (
-        <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
-      )}
+      <div>
+        <input
+          name="confirmPassword"
+          value={confirmPassword}
+          onChange={handleChange}
+          placeholder="Confirm Password"
+          type="password"
+          className="auth-input"
+        />
+        {errors.confirmPassword && <p className="auth-error">{errors.confirmPassword}</p>}
+      </div>
 
       <button
-        onClick={validate}
-        disabled={!isFormValid}
-        className="bg-teal-50 text-white font-semibold py-2 rounded hover:bg-teal-60 transition disabled:opacity-50"
+        type="submit"
+        className="auth-button"
       >
         Sign Up
       </button>
@@ -197,24 +206,36 @@ function Auth() {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="bg-teal-20 text-navy-80 min-h-screen flex flex-col justify-center items-center">
-      <div className="bg-mint-10 p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-6 underline">
-          {isLogin ? "Login" : "Sign Up"}
-        </h2>
+    <div>
+      <Header />
+      
+      <div className="auth-container">
+        <div className="auth-card">
+          {/* Logo can be added here
+          <div className="auth-logo">
+            <img src={logo} alt="PLAYTRIX" />
+          </div>
+          */}
+          
+          <h2 className="auth-title">
+            {isLogin ? "Login" : "Create Account"}
+          </h2>
 
-        {isLogin ? <LoginForm /> : <SignupForm />}
+          {isLogin ? <LoginForm /> : <SignupForm />}
 
-        <p className="mt-4 text-sm text-center">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-teal-50 hover:underline font-semibold"
-          >
-            {isLogin ? "Sign Up" : "Login"}
-          </button>
-        </p>
+          <div className="auth-toggle">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="auth-toggle-button"
+            >
+              {isLogin ? "Sign Up" : "Login"}
+            </button>
+          </div>
+        </div>
       </div>
+      
+      <Footer />
     </div>
   );
 }

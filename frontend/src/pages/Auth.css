@@ -1,87 +1,161 @@
-/* Auth.css */
+/* Auth.css - Matching PLAYTRIX dark theme with teal accents */
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0f172a; /* tailwind slate-900 like background */
-    margin: 0;
+:root {
+  --color-dark-bg: #121212;
+  --color-dark-bg-2: #1e1e1e;
+  --color-teal-30: #4fd1c5;
+  --color-teal-50: #38b2ac;
+  --color-teal-80: #2c7a7b;
+  --color-navy-20: #2d3748;
+  --color-navy-80: #e2e8f0;
+  --color-mint-10: #1a202c;
+  --color-red-500: #f56565;
+  --font-myLodon: 'myLodon', sans-serif;
+}
+
+.auth-container {
+  background-color: var(--color-dark-bg);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.auth-card {
+  background-color: var(--color-dark-bg-2);
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid #2d3748;
+}
+
+.auth-title {
+  font-family: var(--font-myLodon);
+  font-size: 2.25rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.auth-input {
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-dark-bg);
+  border: 1px solid var(--color-navy-20);
+  color: #ffffff;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--color-teal-50);
+  box-shadow: 0 0 0 2px rgba(56, 178, 172, 0.3);
+}
+
+.auth-input::placeholder {
+  color: #718096;
+}
+
+.auth-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #cbd5e0;
+  font-size: 0.875rem;
+  user-select: none;
+}
+
+.auth-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  accent-color: var(--color-teal-50);
+}
+
+.auth-button {
+  background-color: var(--color-teal-50);
+  color: var(--color-dark-bg);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: var(--color-teal-80);
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-toggle {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #cbd5e0;
+  font-size: 0.875rem;
+}
+
+.auth-toggle-button {
+  color: var(--color-teal-30);
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.auth-toggle-button:hover {
+  text-decoration: underline;
+}
+
+.auth-error {
+  color: var(--color-red-500);
+  font-size: 0.75rem;
+  margin-top: -0.75rem;
+}
+
+.auth-logo {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-logo img {
+  height: 3rem;
+  width: auto;
+}
+
+/* Animation for form transition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  body {
-    background-color: lightblue !important;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .auth-container {
-    background-color: #f0fdfa; /* tailwind teal-50 */
-    border-radius: 1rem;
-    padding: 2rem;
-    max-width: 400px;
-    width: 100%;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    color: #0f172a; /* navy-80 */
-  }
-  
-  .auth-container h2 {
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    text-decoration: underline;
-  }
-  
-  .auth-form input {
-    padding: 0.75rem;
-    border-radius: 0.375rem;
-    border: 1px solid #94a3b8; /* tailwind slate-400 */
-    width: 100%;
-    outline: none;
-    transition: 0.2s ease;
-  }
-  
-  .auth-form input:focus {
-    border-color: #14b8a6; /* teal-500 */
-    box-shadow: 0 0 0 2px #99f6e4; /* teal-100 ring */
-  }
-  
-  .auth-form button {
-    background-color: #14b8a6; /* teal-500 */
-    color: white;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-  
-  .auth-form button:hover:not(:disabled) {
-    background-color: #0d9488; /* teal-600 */
-  }
-  
-  .auth-form button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  .toggle-link {
-    margin-top: 1rem;
-    text-align: center;
-    font-size: 0.9rem;
-  }
-  
-  .toggle-link button {
-    color: #14b8a6;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  
-  .toggle-link button:hover {
-    text-decoration: underline;
-  }
-  
-  .error-message {
-    color: #dc2626; /* red-600 */
-    font-size: 0.875rem;
-  }
-  
+}
+
+.auth-form {
+  animation: fadeIn 0.3s ease-out;
+}

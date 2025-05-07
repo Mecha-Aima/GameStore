@@ -11,7 +11,7 @@ const Header = () => {
     const navigation = [
         { title: "Home", path: "/" },
         { title: "Cart", path: "#" },
-        { title: "Contact", path: "#" }
+        { title: "Contact", path: "/contact" }
     ]
 
     useEffect(() => {

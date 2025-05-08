@@ -12,9 +12,9 @@ import arrow from '../assets/icons/chevron-right.svg';
 
 const Contact = () => {
   return (
-    <div className="min-h-screen bg-zinc-900 text-white p-8 flex flex-col gap-8 items-center justify-center h-900px my-24">
+    <div className="min-h-screen bg-zinc-900 text-white flex flex-col gap-8 items-center justify-center h-900px">
       <Header />
-      <div className="grid md:grid-cols-2 gap-8 w-full max-w-6xl h-full">
+      <div className="grid md:grid-cols-2 gap-8 w-full max-w-6xl h-full my-28">
         {/* Contact Information */}
         <div className="bg-zinc-800 p-8 rounded-lg space-y-6 h-full">
           <h2 className="text-2xl font-bold">Contact Information</h2>

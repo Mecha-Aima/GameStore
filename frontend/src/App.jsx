@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Home from './pages/Home';
 import ProductDetails from './pages/ProductDetails';
 import Contact from './pages/Contact';
+import Cart from './pages/Cart';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Router>
   );

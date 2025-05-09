@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react'
 import './Header.css'
 import logo from '../assets/logo/logo.png'
 import chevronRight from '../assets/icons/chevron-right.svg'
+import { Link } from 'react-router-dom'
+
 const Header = () => {
 
     const [state, setState] = useState(false)
 
     const navigation = [
-        { title: "Home", path: "#" },
+        { title: "Home", path: "/" },
         { title: "Cart", path: "#" },
-        { title: "Contact", path: "#" }
+        { title: "Contact", path: "/contact" }
     ]
 
     useEffect(() => {
@@ -20,17 +22,17 @@ const Header = () => {
     }, [])
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 py-4 md:text-sm ${state ? "shadow-lg rounded-xl border mx-2 mt-2 md:shadow-none md:border-none md:mx-2 md:mt-0" : ""}`}>
+        <nav className={`fixed top-0 left-0 right-0 py-4 md:text-sm ${state ? "shadow-lg rounded-xl border mx-2  md:shadow-none md:border-none md:mx-2 md:mt-0" : ""}`}>
             <div className="gap-x-8 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
                 <div>
-                    <a href="#">
+                    <Link to="/">
                         <img
                             src={logo}
                             width={70}
                             height={70}
                             alt="Playtrix logo"
                         />
-                    </a>
+                    </Link>
                     <div className="md:hidden">
                         <button className="bg-dark-bg-2 menu-btn text-teal-60 hover:text-gray-500"
                             onClick={() => setState(!state)}
@@ -55,9 +57,15 @@ const Header = () => {
                             navigation.map((item, idx) => {
                                 return (
                                     <li key={idx} className="text-white hover:text-gray-200">
-                                        <a href={item.path} className="block link:text-white">
-                                            {item.title}
-                                        </a>
+                                        {item.path === "/" ? (
+                                            <Link to={item.path} className="block link:text-white">
+                                                {item.title}
+                                            </Link>
+                                        ) : (
+                                            <a href={item.path} className="block link:text-white">
+                                                {item.title}
+                                            </a>
+                                        )}
                                     </li>
                                 )
                             })
@@ -67,7 +75,7 @@ const Header = () => {
                         <a href="#" className="block text-white hover:text-gray-200 text-base">
                             Log in
                         </a>
-                        <a href="#" className="signup-link text-base text-black">
+                        <a href="#" className="signup-link text-base text-black ">
                             Sign Up
                             <img src={chevronRight} alt="chevron right" className="w-5 h-5" />
                         </a>

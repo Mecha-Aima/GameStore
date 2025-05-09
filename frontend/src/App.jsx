@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
-import OrderSummary from './pages/OrderSummary';
+import './App.css';
 
 function App() {
   useEffect(() => {
@@ -15,13 +15,9 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/ordersummary" element={<OrderSummary />} />
-      </Routes>
-    </Router>
+    <div>
+      <Home />
+    </div>
   );
 }
 

@@ -85,7 +85,7 @@ function LoginForm() {
         />
         {errors.password && <p className="auth-error">{errors.password}</p>}
       </div>
-
+      
       <label className="auth-checkbox-label">
         <input
           name="rememberMe"

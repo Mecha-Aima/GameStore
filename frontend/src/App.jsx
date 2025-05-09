@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import Home from './pages/Home';
-import './App.css';
 
 function App() {
   useEffect(() => {
@@ -12,11 +10,7 @@ function App() {
       .catch(err => console.error('Fetch error:', err));
   }, []);
 
-  return (
-    <div>
-      <Home />
-    </div>
-  );
+  return <div>CORS is working!</div>;
 }
 
 export default App;

@@ -239,9 +239,4 @@ function Auth() {
     </div>
   );
 }
-<<<<<<< HEAD
-
 export default Auth;
-=======
-export default Auth;
->>>>>>> 4d7c917543230bbaf5a2611ffab0cb5223afc417

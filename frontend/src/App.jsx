@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Auth from './pages/Auth'
+import  Home from './pages/Home'
 import {BrowserRouter as Router,Routes,Route} from "react-router-dom";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path='/auth' element={<Auth/>}/>
       </Routes>
 

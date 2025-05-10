@@ -1,59 +1,55 @@
-/* 
-Order Summary Page
-Summary List: Repeat of cart items with final quantities and per-item totals
-Cost Breakdown: Subtotal, tax, any discounts, Grand Total
-Confirm / Cancel Controls: “Confirm Order” (→ payment) and “Back to Cart”
-*/
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import './OrderSummary.css';
 
-const OrderSummary = ({ 
-  cartItems = [//items in carts must be added here 
+const OrderSummary = () => {
+  const [paymentMethod, setPaymentMethod] = useState('');
+
+  const handlePaymentChange = (e) => {
+    setPaymentMethod(e.target.value);
+  };
+
+  const orderItems = [
     {
       id: 1,
-      title: "Punjab Warriors",
-      price: 1299,
-      quantity: 1,
-      genre: "Action",
-      image: "https://via.placeholder.com/150"
+      title: 'Punjab Warriors',
+      genre: 'Action',
+      quantity: 2,
+      price: "1299.00",
+      image: 'https://via.placeholder.com/80',
     },
     {
       id: 2,
-      title: "Truck Art Racer",
-      price: 799,
-      quantity: 2,
-      genre: "Racing",
-      image: "https://via.placeholder.com/150"
-    }
-  ], 
-  onConfirmOrder = () => console.log("Order confirmed"), 
-  onBackToCart = () => console.log("Back to cart")
-}) => {
-  // Calculate order totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.05; // 5% tax
-  const discount = subtotal > 5000 ? subtotal * 0.1 : 0; // 10% discount if over 5000
-  const grandTotal = subtotal + tax - discount;
+      title: 'Bazaar Tycoon',
+      genre: "Simulation",
+      quantity: 3,
+      price: "849.00",
+      image: 'https://via.placeholder.com/80',
+    },
+  ];
+
+  const subtotal = orderItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  const discount = subtotal * 0.1;
+  const tax = subtotal * 0.13;
+  const total = subtotal - discount + tax;
 
   return (
     <div className="order-summary-container">
-      <h2 className="order-summary-title">Order Summary</h2>
-      <p className="order-summary-subtitle">Review your order before proceeding to payment</p>
-      
+      <h1 className="order-summary-title">Order Summary</h1>
+      <p className="order-summary-subtitle">Here’s a summary of your order.</p>
+
       <div className="order-items-container">
-        {cartItems.map((item) => (
+        {orderItems.map((item) => (
           <div key={item.id} className="order-item">
             <div className="order-item-image">
               <img src={item.image} alt={item.title} />
             </div>
             <div className="order-item-details">
-              <h3 className="order-item-title">{item.title}</h3>
-              <p className="order-item-genre">{item.genre}</p>
+              <div className="order-item-title">{item.title}</div>
+              <div className="order-item-genre">{item.genre}</div>
             </div>
             <div className="order-item-pricing">
-              <p className="order-item-quantity">Qty: {item.quantity}</p>
-              <p className="order-item-price">Rs. {(item.price * item.quantity).toFixed(2)}</p>
+              <div className="order-item-quantity">Qty: {item.quantity}</div>
+              <div className="order-item-price">Rs. {item.quantity * item.price}</div>
             </div>
           </div>
         ))}
@@ -61,40 +57,53 @@ const OrderSummary = ({
 
       <div className="order-totals">
         <div className="order-total-row">
-          <span>Subtotal:</span>
-          <span>Rs. {subtotal.toFixed(2)}</span>
+          <span>Subtotal</span>
+          <span>Rs. {subtotal.toFixed(0)}</span>
+        </div>
+        <div className="order-total-row discount">
+          <span>Discount (10%)</span>
+          <span>- Rs. {discount.toFixed(0)}</span>
         </div>
         <div className="order-total-row">
-          <span>Tax (5%):</span>
-          <span>Rs. {tax.toFixed(2)}</span>
+          <span>Tax (13%)</span>
+          <span>Rs. {tax.toFixed(0)}</span>
         </div>
-        {discount > 0 && (
-          <div className="order-total-row discount">
-            <span>Discount (10%):</span>
-            <span>- Rs. {discount.toFixed(2)}</span>
-          </div>
-        )}
         <div className="order-total-row grand-total">
-          <span>Grand Total:</span>
-          <span>Rs. {grandTotal.toFixed(2)}</span>
+          <span>Grand Total</span>
+          <span>Rs. {total.toFixed(0)}</span>
         </div>
       </div>
 
+      <div className="payment-method">
+  <h2 className="payment-method-title">Select Payment Method:</h2>
+
+  {[
+    { id: 'credit', label: 'Credit Card', icon: 'https://cdn-icons-png.flaticon.com/512/633/633611.png' },
+    { id: 'cod', label: 'Cash On Delivery', icon: null }, // No icon for COD
+    { id: 'paypal', label: 'PayPal', icon: 'https://cdn-icons-png.flaticon.com/512/196/196565.png' },
+    { id: 'gpay', label: 'Google Pay', icon: 'https://cdn-icons-png.flaticon.com/512/300/300221.png' },
+  ].map((method) => (
+    <div className="payment-option" key={method.id}>
+      <input
+        type="radio"
+        id={method.id}
+        name="paymentMethod"
+        value={method.label}
+        checked={paymentMethod === method.label}
+        onChange={handlePaymentChange}
+      />
+      <label htmlFor={method.id}>
+        {method.icon && <img src={method.icon} alt={method.label} />}
+        {method.label}
+      </label>
+    </div>
+  ))}
+</div>
+
+
       <div className="order-actions">
-        <button 
-          onClick={onBackToCart} 
-          className="back-to-cart-button"
-        >
-          Back to Cart
-        </button>
-        <Link to="/payment">
-          <button 
-            onClick={onConfirmOrder} 
-            className="confirm-order-button"
-          >
-            Confirm Order
-          </button>
-        </Link>
+        <button className="back-to-cart-button">Back to Cart</button>
+        <button className="confirm-order-button">Confirm Order</button>
       </div>
     </div>
   );

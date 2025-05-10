@@ -2,9 +2,7 @@
 
 /* Background and container color */
 .order-summary-container {
-  background-color: #0F172A; /* bg-navy-90 */
-  color: white;
-  padding: 20px;
+  padding: 48px 20px;
   border-radius: 10px;
 }
 
@@ -12,12 +10,10 @@
 .order-summary-title {
   font-size: 2rem;
   font-weight: bold;
-  color: #5eead4; /* text-teal-10 */
 }
 
 .order-summary-subtitle {
   font-size: 1rem;
-  color: #a0aec0;
   margin-top: 8px;
 }
 
@@ -30,11 +26,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #1E293B; /* bg-navy-50 */
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 8px;
-  border: 1px solid #334155; /* border-navy-40 */
 }
 
 .order-item-image img {
@@ -55,7 +49,6 @@
 
 .order-item-genre {
   font-size: 0.875rem;
-  color: #a0aec0;
 }
 
 .order-item-pricing {
@@ -69,10 +62,9 @@
 
 /* Totals */
 .order-totals {
-  margin-top: 20px;
-  background-color: #1E293B; /* bg-navy-50 */
   padding: 15px;
   border-radius: 10px;
+  height: 200px;
 }
 
 .order-total-row {
@@ -87,13 +79,11 @@
 
 .grand-total {
   font-weight: bold;
-  color: #5eead4; /* text-teal-10 */
 }
 
 /* Payment Method Section */
 .payment-method {
   margin-top: 30px;
-  background-color: #1E293B; /* Light Blue Background */
   padding: 20px;
   border-radius: 10px;
 }
@@ -101,7 +91,6 @@
 .payment-method-title {
   font-size: 1.25rem;
   font-weight: bold;
-  color: white;
   margin-bottom: 15px;
 }
 
@@ -117,7 +106,6 @@
 
 .payment-option label {
   font-size: 1rem;
-  color: white;
 }
 
 .payment-option img {
@@ -140,20 +128,46 @@
   cursor: pointer;
 }
 
-.back-to-cart-button {
-  background-color: #334155; /* border-navy-40 */
-  color: white;
-}
-
-.confirm-order-button {
-  background-color: #5eead4; /* text-teal-10 */
-  color: white;
-}
-
 .back-to-cart-button:hover {
   background-color: #2d3a4b;
 }
 
 .confirm-order-button:hover {
   background-color: #4bc0a0;
+}
+
+.order-details-container {
+  margin-top: 20px;
+  height: 100%;
+}
+
+.shipping-info {
+  padding: 15px;
+  border-radius: 10px;
+  height: 200px;
+}
+
+.shipping-info-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.shipping-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shipping-detail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-label {
+  font-weight: 500;
+}
+
+.detail-value {
+  text-align: right;
 }

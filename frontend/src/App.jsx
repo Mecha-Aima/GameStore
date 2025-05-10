@@ -6,6 +6,7 @@ import OrderSummary from './pages/OrderSummary';
 import ProductDetails from './pages/ProductDetails';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
+import GameList from './pages/GameList';
 import './App.css';
 
 
@@ -28,7 +29,7 @@ function App() {
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
-
+        <Route path="/games" element={<GameList />} />
       </Routes>
     </Router>
   );

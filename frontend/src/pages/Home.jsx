@@ -1,10 +1,10 @@
 // Home Page
 
 //Header / NavBar: Logo, search bar, category dropdown, cart icon with item count
-//Category Filter: Horizontal list or sidebar with “All”, Action, Adventure, Strategy, etc.
-//Featured Games Grid: Responsive card grid showing each game’s cover image, title, price, “View Details” button
+//Category Filter: Horizontal list or sidebar with "All", Action, Adventure, Strategy, etc.
+//Featured Games Grid: Responsive card grid showing each game's cover image, title, price, "View Details" button
 //Footer: Links (About, Contact, Terms), social icons 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import GameCard from '../components/GameCard';
@@ -12,7 +12,41 @@ import heroBg from '../assets/images/hero-bg.png';
 import search from '../assets/icons/search.svg';
 import Filter from '../components/Filter';
 import './Home.css';
+import { useGames } from '../GamesContext';
+
 const Home = () => {
+  const { games, loading, error, getGamesByGenre } = useGames();
+  const [filteredGames, setFilteredGames] = useState([]);
+  
+  useEffect(() => {
+    setFilteredGames(games);
+  }, [games]);
+
+  const handleFilterChange = (selectedGenres) => {
+    if (selectedGenres.length === 0) {
+      setFilteredGames(games);
+    } else {
+      const filtered = selectedGenres.flatMap(genre => getGamesByGenre(genre));
+      setFilteredGames(filtered);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-white text-xl">Loading games...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500 text-xl">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Header />
@@ -52,17 +86,16 @@ const Home = () => {
         <section className='my-24'>
             <h2 className='text-4xl font-bold text-white mb-6 font-myLodon text-left mx-auto max-w-7xl'>Featured Games</h2>
             <p className='text-gray-400 mb-6 text-left mx-auto max-w-7xl'>Discover our latest and most popular games</p>
-            <Filter />
+            <Filter onFilterChange={handleFilterChange} />
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto max-w-7xl'>
-                <GameCard title="Punjab Warriors" price="1299.00" genre="Action" />
-                <GameCard title="Truck Art Racer" price="799.00" genre="Racing" />
-                <GameCard title="Cricket Champions" price="999.00" genre="Sports" />
-                <GameCard title="Karachi Drift" price="1149.00" genre="Racing" />
-                <GameCard title="Bazaar Tycoon" price="849.00" genre="Simulation" />
-                <GameCard title="Ludo Pro" price="499.00" genre="Board" />
-                <GameCard title="Pak Fighter X" price="1399.00" genre="Fighting" />
-                <GameCard title="Ravi River Escape" price="749.00" genre="Adventure" />
-                <GameCard title="Shehzadi Quest" price="1599.00" genre="RPG" />
+                {filteredGames.map(game => (
+                    <GameCard 
+                        key={game.game_id}
+                        title={game.title}
+                        price={game.price}
+                        genre={game.genre}
+                    />
+                ))}
             </div>
         </section>
       </main>

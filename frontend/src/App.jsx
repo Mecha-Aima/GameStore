@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { GamesProvider } from './GamesContext';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
 import OrderSummary from './pages/OrderSummary';
@@ -22,15 +23,17 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/ordersummary" element={<OrderSummary />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/games" element={<GameList />} />
-      </Routes>
+      <GamesProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/ordersummary" element={<OrderSummary />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/games" element={<GameList />} />
+        </Routes>
+      </GamesProvider>
     </Router>
   );
 }

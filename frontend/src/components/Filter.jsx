@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import chevronDown from '../assets/icons/chevron-down.svg';
 
-const Filter = () => {
+const Filter = ({ onFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState([]);
 
@@ -11,11 +11,12 @@ const Filter = () => {
   ];
 
   const toggleGenre = (genre) => {
-    setSelectedGenres(prev => 
-      prev.includes(genre) 
-        ? prev.filter(g => g !== genre)
-        : [...prev, genre]
-    );
+    const newSelectedGenres = selectedGenres.includes(genre)
+      ? selectedGenres.filter(g => g !== genre)
+      : [...selectedGenres, genre];
+    
+    setSelectedGenres(newSelectedGenres);
+    onFilterChange(newSelectedGenres);
   };
 
   return (

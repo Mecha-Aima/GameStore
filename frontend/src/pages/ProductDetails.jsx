@@ -11,28 +11,30 @@ import Footer from "../components/Footer";
 import img from "../assets/images/game-covers/echo-drift.png";
 import pc from "../assets/icons/pc.svg";
 import xbox from "../assets/icons/xbox.svg";
+import ps from "../assets/icons/playstation.svg";
+import mobile from "../assets/icons/mobile.svg";
 import InfoBadge from "../components/Badges";
 
-const game = {
-    id: 1,
-    title: "Echo Drift",
-    genre: "Racing",
-    description: "In a future where reality is unstable, elite pilots compete in high-speed hoverbike races across fractured dimensions. As rookie drifter Kael, you'll master impossible tracks, manipulate gravity, and use dimensional glitches to outmaneuver rivals. With a dynamic weather system and shifting terrains, no race is ever the same.",
-    platform: ["PC", "Xbox"],
-    release_date: "2024-05-07",
-    price: 2499.99,
-    image: img,
-}
+const ProductDetails = ({ game }) => {
+    if (!game) {
+        return (
+            <div className="min-h-screen bg-neutral-900">
+                <Header />
+                <div className="max-w-7xl mx-auto py-16 px-4 md:px-8 items-center my-24">
+                    <h1 className="text-4xl font-bold text-white mb-4 text-center">Game not found</h1>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
 
-
-const ProductDetails = () => {
     return (
         <div className="min-h-screen bg-neutral-900">
             <Header />
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-12 py-16 px-4 md:px-8 items-center my-24">
                 <div className="flex-1 flex items-start justify-center h-full">
                     <img 
-                        src={game.image} 
+                        src={img} 
                         alt={game.title} 
                         className="rounded-2xl object-cover w-full max-w-xl shadow-lg h-full max-h-[800px]"
                     />
@@ -46,8 +48,10 @@ const ProductDetails = () => {
                     </div>
                     <div>
                         <h5 className="font-semibold text-white text-left mb-2 ">Platform:</h5>
-                        {game.platform.includes("PC") && <span className="inline-flex items-start mr-4 text-gray-400"><img src={pc} alt="PC" className="w-6 h-6 mr-1 inline" />PC</span>}
-                        {game.platform.includes("Xbox") && <span className="inline-flex items-start text-gray-400"><img src={xbox} alt="Xbox" className="w-6 h-6 mr-1 inline" />Console</span>}
+                        {game.platform?.includes("PC") && <span className="inline-flex items-start mr-4 text-gray-400"><img src={pc} alt="PC" className="w-6 h-6 mr-1 inline" />PC</span>}
+                        {game.platform?.includes("Xbox") && <span className="inline-flex items-start text-gray-400"><img src={xbox} alt="Xbox" className="w-6 h-6 mr-1 inline" />Console</span>}
+                        {game.platform?.includes("Playstation") && <span className="inline-flex items-start text-gray-400"><img src={ps} alt="Playstation" className="w-6 h-6 mr-1 inline" />Playstation</span>}
+                        {game.platform?.includes("Mobile") && <span className="inline-flex items-start text-gray-400"><img src={mobile} alt="Mobile" className="w-6 h-6 mr-1 inline" />Mobile</span>}
                     </div>
                     <div className="text-neutral-400 mb-2 text-left">
                         <div>Release Date: <span className="text-white ml-2">{game.release_date}</span></div>
@@ -55,7 +59,7 @@ const ProductDetails = () => {
                     </div>
                     <div className="bg-neutral-800 rounded-2xl p-8 flex flex-col gap-4 w-full mt-4 shadow-lg">
                         <div className="flex items-center justify-between">
-                            <span className="text-lg font-bold text-white">Price: Rs. {game.price.toFixed(2)}</span>
+                            <span className="text-lg font-bold text-white">Price: Rs. {game.price?.toFixed(2)}</span>
                             <span className="text-green-400 font-medium">In Stock</span>
                         </div>
                         <button className="bg-teal-400 hover:bg-teal-600 text-black text-lg font-semibold rounded-xl py-3">Add to Cart</button>

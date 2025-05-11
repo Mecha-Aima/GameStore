@@ -8,6 +8,7 @@ import ProductDetails from './pages/ProductDetails';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import GameList from './pages/GameList';
+import { UserProvider } from './UserContext';
 import './App.css';
 
 
@@ -15,17 +16,20 @@ function App() {
 
   return (
     <Router>
-      <GamesProvider>
-        <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/ordersummary" element={<OrderSummary />} />
-          <Route path="/product" element={<ProductDetails />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/games" element={<GameList />} />
-        </Routes>
-      </GamesProvider>
+      <UserProvider>
+        <GamesProvider>
+          <Routes>
+            <Route path="/" element={<Auth />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/ordersummary" element={<OrderSummary />} />
+            <Route path="/product" element={<ProductDetails />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/games" element={<GameList />} />
+          </Routes>
+        </GamesProvider>
+      </UserProvider>
     </Router>
   );
 }

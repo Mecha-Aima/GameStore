@@ -24,7 +24,7 @@
   max-width: 400px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   color: #5eead4; /* text-teal-10 */
-  margin: 2rem 0;
+  margin: 8rem 0;
 }
 
 .auth-container h2 {
@@ -50,6 +50,7 @@
   width: 100%;
   outline: none;
   transition: 0.2s ease;
+  color: white;
 }
 
 .auth-form input:focus {
@@ -83,10 +84,11 @@
   margin-top: 1rem;
   text-align: center;
   font-size: 0.9rem;
+  color: white;
 }
 
 .toggle-link button {
-  color: #14b8a6; /* teal-90 */
+  color: white;/* teal-90 */
   background: none;
   border: none;
   cursor: pointer;
@@ -122,4 +124,11 @@
 footer {
   margin-top: auto;
   width: 100%;
+}
+
+.auth-error {
+  color: #e26363; /* Error red */
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }

@@ -1,9 +1,8 @@
 import './Auth.css';
 import React, { useState } from "react";
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-// You can import your logo here
-// import logo from '../assets/images/logo.png';
+import { useUser } from '../UserContext';
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo/logo.png';
 
 // ------------------ Utilities ------------------
 const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
@@ -39,6 +38,7 @@ function useForm(initialValues, validateFn) {
 
 // ------------------ Login Form ------------------
 function LoginForm() {
+  const navigate = useNavigate();
   const { values, errors, handleChange, validate } = useForm(
     { email: "", password: "", rememberMe: false },
     ({ email, password }) => {
@@ -51,12 +51,30 @@ function LoginForm() {
   );
 
   const { email, password, rememberMe } = values;
+  const { login } = useUser();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Login form valid, submitting:", values);
-      // Handle form submission here
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        login(data.user);
+        console.log(data.user);
+        // redirect to home page
+        navigate('/home');
+      } else {
+        // handle error
+        console.log(`Error ${res.status}: Invalid email or password`);
+        alert('Invalid email or password');
+      }
     }
   };
 
@@ -109,7 +127,8 @@ function LoginForm() {
 }
 
 // ------------------ Signup Form ------------------
-function SignupForm() {
+function SignupForm({ setShowDetailsForm }) {
+  const { signup } = useUser();
   const { values, errors, handleChange, validate } = useForm(
     {
       username: "",
@@ -133,11 +152,30 @@ function SignupForm() {
 
   const { username, email, password, confirmPassword } = values;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Signup form valid, submitting:", values);
-      // Handle form submission here
+      try {
+        const res = await fetch('http://localhost:3000/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ username, email, password }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("signup response:", data);
+          signup(data.user);
+          setShowDetailsForm(true);
+        } else {
+          const errorData = await res.json();
+          alert(errorData.error || 'Signup failed');
+        }
+      } catch (err) {
+        alert('Signup failed. Please try again.');
+      }
     }
   };
 
@@ -154,7 +192,6 @@ function SignupForm() {
         />
         {errors.username && <p className="auth-error">{errors.username}</p>}
       </div>
-
       <div>
         <input
           name="email"
@@ -166,7 +203,6 @@ function SignupForm() {
         />
         {errors.email && <p className="auth-error">{errors.email}</p>}
       </div>
-
       <div>
         <input
           name="password"
@@ -178,7 +214,6 @@ function SignupForm() {
         />
         {errors.password && <p className="auth-error">{errors.password}</p>}
       </div>
-
       <div>
         <input
           name="confirmPassword"
@@ -190,7 +225,6 @@ function SignupForm() {
         />
         {errors.confirmPassword && <p className="auth-error">{errors.confirmPassword}</p>}
       </div>
-
       <button
         type="submit"
         className="auth-button"
@@ -201,41 +235,132 @@ function SignupForm() {
   );
 }
 
+// ------------------ Details Form ------------------
+function DetailsForm() {
+  const navigate = useNavigate();
+  const { user, signup } = useUser();
+  const [values, setValues] = useState({
+    fullName: '',
+    phone: '',
+    address: ''
+  });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    if (!values.fullName) newErrors.fullName = 'Full Name is required';
+    if (!values.phone) newErrors.phone = 'Phone No is required';
+    if (!values.address) newErrors.address = 'Address is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    setLoading(true);
+    console.log("signup form valid, submitting:", values);
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/create_customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_id: user.user_id,
+          full_name: values.fullName,
+          phone: values.phone,
+          address: values.address
+        })
+      });
+      if (res.ok) {
+        signup({ ...user, full_name: values.fullName, phone: values.phone, address: values.address });
+        console.log("details form response:", res);
+        console.log("user:", user);
+        navigate('/home');
+        alert('Account created successfully!');
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || 'Failed to create customer details');
+      }
+    } catch (err) {
+      alert('Failed to create customer details. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div>
+        <input
+          name="fullName"
+          value={values.fullName}
+          onChange={handleChange}
+          placeholder="Full Name"
+          type="text"
+          className="auth-input"
+        />
+        {errors.fullName && <p className="auth-error">{errors.fullName}</p>}
+      </div>
+      <div>
+        <input
+          name="phone"
+          value={values.phone}
+          onChange={handleChange}
+          placeholder="Phone No"
+          type="text"
+          className="auth-input"
+        />
+        {errors.phone && <p className="auth-error">{errors.phone}</p>}
+      </div>
+      <div>
+        <input
+          name="address"
+          value={values.address}
+          onChange={handleChange}
+          placeholder="Address"
+          type="text"
+          className="auth-input"
+        />
+        {errors.address && <p className="auth-error">{errors.address}</p>}
+      </div>
+      <button type="submit" className="auth-button mt-4" disabled={loading}>
+        {loading ? 'Creating...' : 'Create Account'}
+      </button>
+    </form>
+  );
+}
+
 // ------------------ Main Auth Component ------------------
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
+  const [showDetailsForm, setShowDetailsForm] = useState(false);
 
   return (
-    <div>
-      <Header />
-      
-      <div className="auth-container">
+    <div className="flex flex-col h-fit justify-center items-center gap-32">
+      <div className="auth-container mb-24 max-w-xl w-full">
         <div className="auth-card">
-          {/* Logo can be added here
-          <div className="auth-logo">
-            <img src={logo} alt="PLAYTRIX" />
-          </div>
-          */}
-          
+          <img src={logo} alt="PLAYTRIX" className="auth-logo" width={100} height={100} style={{ display: 'block', margin: '0 auto' }} />
           <h2 className="auth-title">
-            {isLogin ? "Login" : "Create Account"}
+            {isLogin ? "Login" : showDetailsForm ? "Enter your details" : "Create Account"}
           </h2>
-
-          {isLogin ? <LoginForm /> : <SignupForm />}
-
-          <div className="auth-toggle">
+          {isLogin ? <LoginForm /> : showDetailsForm ? <DetailsForm /> : <SignupForm setShowDetailsForm={setShowDetailsForm} />}
+          <div className="auth-toggle text-slate-200">
             {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
             <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="auth-toggle-button"
+              onClick={() => { setIsLogin(!isLogin); setShowDetailsForm(false); }}
+              className="auth-toggle-button text-teal-20"
             >
               {isLogin ? "Sign Up" : "Login"}
             </button>
           </div>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 }

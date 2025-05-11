@@ -9,8 +9,8 @@ const Header = () => {
     const [state, setState] = useState(false)
 
     const navigation = [
-        { title: "Home", path: "/" },
-        { title: "Cart", path: "#" },
+        { title: "Home", path: "/home" },
+        { title: "Cart", path: "/cart" },
         { title: "Contact", path: "/contact" }
     ]
 
@@ -25,7 +25,7 @@ const Header = () => {
         <nav className={`fixed top-0 left-0 right-0 py-4 md:text-sm ${state ? "shadow-lg rounded-xl border mx-2  md:shadow-none md:border-none md:mx-2 md:mt-0" : ""}`}>
             <div className="gap-x-8 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
                 <div>
-                    <Link to="/">
+                    <Link to="/home">
                         <img
                             src={logo}
                             width={70}

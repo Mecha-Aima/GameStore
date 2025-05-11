@@ -4,7 +4,6 @@ import axios from 'axios';
 const GamesContext = createContext();
 
 export function GamesProvider({ children }) {
-  console.log('GamesProvider rendering');
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +13,7 @@ export function GamesProvider({ children }) {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:3000/api/games');
+        console.log("Games data received:", response.data);
         setGames(response.data);
         setError(null);
       } catch (err) {
@@ -31,11 +31,19 @@ export function GamesProvider({ children }) {
     return games.filter(game => game.genre === genre);
   };
 
+  const getGameById = (gameId) => { 
+    console.log("Looking for game with ID:", gameId, "in games:", games);
+    const game = games.find(game => game.game_id === gameId);
+    console.log("Found game:", game);
+    return game;
+  };
+
   const value = {
     games,
     loading,
     error,
-    getGamesByGenre
+    getGamesByGenre,
+    getGameById
   };
 
   return (

@@ -5,6 +5,7 @@
 //Featured Games Grid: Responsive card grid showing each game's cover image, title, price, "View Details" button
 //Footer: Links (About, Contact, Terms), social icons 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import GameCard from '../components/GameCard';
@@ -15,8 +16,9 @@ import './Home.css';
 import { useGames } from '../GamesContext';
 
 const Home = () => {
-  const { games, loading, error, getGamesByGenre } = useGames();
+  const { games, loading, error, getGamesByGenre, getGameById } = useGames();
   const [filteredGames, setFilteredGames] = useState([]);
+  const navigate = useNavigate();
   
   useEffect(() => {
     setFilteredGames(games);
@@ -28,6 +30,14 @@ const Home = () => {
     } else {
       const filtered = selectedGenres.flatMap(genre => getGamesByGenre(genre));
       setFilteredGames(filtered);
+    }
+  };
+
+  const handleGameClick = (gameId) => {
+    const game = getGameById(gameId);
+    console.log("Game received:", game);
+    if (game) {
+      navigate('/product', { state: { game } });
     }
   };
 
@@ -88,14 +98,18 @@ const Home = () => {
             <p className='text-gray-400 mb-6 text-left mx-auto max-w-7xl'>Discover our latest and most popular games</p>
             <Filter onFilterChange={handleFilterChange} />
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto max-w-7xl'>
-                {filteredGames.map(game => (
-                    <GameCard 
-                        key={game.game_id}
-                        title={game.title}
-                        price={game.price}
-                        genre={game.genre}
-                    />
-                ))}
+                {filteredGames.map(game => {
+                    console.log("Rendering game:", game);
+                    return (
+                        <GameCard 
+                            key={game.game_id}
+                            title={game.title}
+                            price={game.price}
+                            genre={game.genre}
+                            onClick={() => handleGameClick(game.game_id)}
+                        />
+                    );
+                })}
             </div>
         </section>
       </main>

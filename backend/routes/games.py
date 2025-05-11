@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from sqlalchemy import text
-from ..database import engine
+from database import engine
 
 # Create a Blueprint for game routes
 games_bp = Blueprint('games', __name__)

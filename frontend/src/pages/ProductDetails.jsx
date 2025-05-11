@@ -6,6 +6,7 @@ Description: Expandable text block with scroll or "Read more"
 Purchase Box: Price, quantity selector, "Add to Cart" button, stock availability
 */
 
+import { useLocation } from 'react-router-dom';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import img from "../assets/images/game-covers/echo-drift.png";
@@ -15,7 +16,10 @@ import ps from "../assets/icons/playstation.svg";
 import mobile from "../assets/icons/mobile.svg";
 import InfoBadge from "../components/Badges";
 
-const ProductDetails = ({ game }) => {
+const ProductDetails = () => {
+    const location = useLocation();
+    const game = location.state?.game;
+
     if (!game) {
         return (
             <div className="min-h-screen bg-neutral-900">
@@ -54,12 +58,12 @@ const ProductDetails = ({ game }) => {
                         {game.platform?.includes("Mobile") && <span className="inline-flex items-start text-gray-400"><img src={mobile} alt="Mobile" className="w-6 h-6 mr-1 inline" />Mobile</span>}
                     </div>
                     <div className="text-neutral-400 mb-2 text-left">
-                        <div>Release Date: <span className="text-white ml-2">{game.release_date}</span></div>
+                        <div>Release Date: <span className="text-white ml-2">{new Date(game.release_date).toLocaleDateString()}</span></div>
                         <div>Genre: <span className="text-white ml-2 inline-block mt-2"><InfoBadge genre={game.genre} /></span></div>
                     </div>
                     <div className="bg-neutral-800 rounded-2xl p-8 flex flex-col gap-4 w-full mt-4 shadow-lg">
                         <div className="flex items-center justify-between">
-                            <span className="text-lg font-bold text-white">Price: Rs. {game.price?.toFixed(2)}</span>
+                            <span className="text-lg font-bold text-white">Price: Rs. {typeof game.price === 'number' ? game.price.toFixed(2) : game.price}</span>
                             <span className="text-green-400 font-medium">In Stock</span>
                         </div>
                         <button className="bg-teal-400 hover:bg-teal-600 text-black text-lg font-semibold rounded-xl py-3">Add to Cart</button>

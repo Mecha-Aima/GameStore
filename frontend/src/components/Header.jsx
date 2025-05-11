@@ -3,11 +3,12 @@ import './Header.css'
 import logo from '../assets/logo/logo.png'
 import chevronRight from '../assets/icons/chevron-right.svg'
 import { Link } from 'react-router-dom'
+import { useUser } from '../UserContext'
 
 const Header = () => {
 
     const [state, setState] = useState(false)
-
+    const { user, login, logout } = useUser()
     const navigation = [
         { title: "Home", path: "/home" },
         { title: "Cart", path: "/cart" },
@@ -72,13 +73,10 @@ const Header = () => {
                         }
                     </ul>
                     <div className="flex-1 gap-x-10 items-center justify-end mt-6 space-y-6 md:flex md:space-y-0 md:mt-0">
-                        <a href="#" className="block text-white hover:text-gray-200 text-base">
-                            Log in
-                        </a>
-                        <a href="#" className="signup-link text-base text-black ">
-                            Sign Up
+                        <Link to="/" className="signup-link text-base text-black " onClick={() => logout()}>
+                            Log Out
                             <img src={chevronRight} alt="chevron right" className="w-5 h-5" />
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

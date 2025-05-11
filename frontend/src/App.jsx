@@ -9,6 +9,7 @@ import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import GameList from './pages/GameList';
 import { UserProvider } from './UserContext';
+import { CartProvider } from './CartContext';
 import './App.css';
 
 
@@ -18,16 +19,18 @@ function App() {
     <Router>
       <UserProvider>
         <GamesProvider>
-          <Routes>
-            <Route path="/" element={<Auth />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/ordersummary" element={<OrderSummary />} />
-            <Route path="/product" element={<ProductDetails />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/games" element={<GameList />} />
-          </Routes>
+          <CartProvider>
+            <Routes>
+              <Route path="/" element={<Auth />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/ordersummary" element={<OrderSummary />} />
+              <Route path="/product" element={<ProductDetails />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/games" element={<GameList />} />
+            </Routes>
+          </CartProvider>
         </GamesProvider>
       </UserProvider>
     </Router>

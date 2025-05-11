@@ -1,6 +1,9 @@
 from flask import Blueprint, jsonify, request, session
 from sqlalchemy import text
 from database import engine
+import os
+from urllib.parse import quote
+from datetime import date
 
 # Create a Blueprint for game routes
 games_bp = Blueprint('games', __name__)
@@ -10,6 +13,12 @@ def get_games():
     with engine.connect() as conn:
         result = conn.execute(text("SELECT * FROM Game"))
         games = [dict(row) for row in result.mappings().all()]
+        
+        for game in games:
+            if 'image_url' in game and game['image_url']:
+                filename = os.path.basename(game['image_url']) 
+                game['image_url'] = '/game-covers/' + quote(filename)
+        
         return jsonify(games)
 
 @games_bp.route('/api/games/<int:game_id>', methods=['GET'])
@@ -105,6 +114,82 @@ def create_customer():
             )
             conn.commit()
             return jsonify({'message': 'Customer created successfully.', }), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+@games_bp.route('/api/orders/add', methods=['POST'])
+def add_order():
+    data = request.get_json()
+    customer_id = data.get('customer_id')
+    if not customer_id:
+        return jsonify({'error': 'customer_id is required.'}), 400
+
+    order_date = date.today().isoformat()
+    status = 'Pending'
+
+    try:
+        with engine.connect() as conn:
+            # Get max order_id
+            result = conn.execute(text("SELECT MAX(order_id) AS max_id FROM [Order]"))
+            max_id_row = result.mappings().first()
+            max_order_id = max_id_row['max_id'] if max_id_row['max_id'] is not None else 0
+            new_order_id = max_order_id + 1
+            print(new_order_id, order_date, customer_id, status)
+
+            # Insert new order
+            conn.execute(
+                text("INSERT INTO [Order] (order_id, order_date, customer_id, status) VALUES (:order_id, :order_date, :customer_id, :status)"),
+                {"order_id": new_order_id, "order_date": order_date, "customer_id": customer_id, "status": status}
+            )
+            conn.commit()
+            print("Order created successfully.")
+            return jsonify({'message': 'Order created successfully.', 'order': {'order_id': new_order_id, 'order_date': order_date, 'customer_id': customer_id, 'status': status}}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+@games_bp.route('/api/order_items/add', methods=['POST'])
+def add_order_item():
+    data = request.get_json()
+    order_id = data.get('order_id')
+    game_id = data.get('game_id')
+    unit_price = data.get('unit_price')
+    quantity = data.get('quantity')
+    if not all([order_id, game_id, unit_price, quantity]):
+        return jsonify({'error': 'order_id, game_id, unit_price, and quantity are required.'}), 400
+
+    try:
+        with engine.connect() as conn:
+            conn.execute(
+                text("INSERT INTO OrderItem (order_id, game_id, unit_price, quantity) VALUES (:order_id, :game_id, :unit_price, :quantity)"),
+                {"order_id": order_id, "game_id": game_id, "unit_price": unit_price, "quantity": quantity}
+            )
+            conn.commit()
+            return jsonify({'message': 'Order item created successfully.', 'order_item': {'order_id': order_id, 'game_id': game_id, 'unit_price': unit_price, 'quantity': quantity}}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+@games_bp.route('/api/customer', methods=['GET'])
+def get_customer():
+    user_id = request.args.get('user_id') or (request.json.get('user_id') if request.is_json else None)
+    if not user_id:
+        return jsonify({'error': 'user_id is required as a query parameter or in JSON body.'}), 400
+    try:
+        user_id = int(user_id)
+    except (ValueError, TypeError):
+        return jsonify({'error': 'user_id must be an integer.'}), 400
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(
+                text("SELECT * FROM Customer WHERE user_id = :user_id"),
+                {"user_id": user_id}
+            )
+            customer = result.mappings().first()
+            if not customer:
+                return jsonify({'error': 'Customer not found.'}), 404
+            return jsonify(dict(customer)), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     

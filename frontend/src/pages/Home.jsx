@@ -106,6 +106,7 @@ const Home = () => {
                             title={game.title}
                             price={game.price}
                             genre={game.genre}
+                            imageUrl={game.image_url}
                             onClick={() => handleGameClick(game.game_id)}
                         />
                     );

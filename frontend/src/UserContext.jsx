@@ -1,16 +1,52 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [orderId, setOrderIdState] = useState(() => {
+    const stored = localStorage.getItem('orderId');
+    return stored ? JSON.parse(stored) : null;
+  });
 
-  const login = (userData) => setUser(userData);
-  const logout = () => setUser(null);
-  const signup = (userData) => setUser(userData);
+  useEffect(() => {
+    if (orderId !== null) {
+      localStorage.setItem('orderId', JSON.stringify(orderId));
+    } else {
+      localStorage.removeItem('orderId');
+    }
+  }, [orderId]);
+
+  const setOrderId = (id) => {
+    setOrderIdState(id);
+    if (id !== null) {
+      localStorage.setItem('orderId', JSON.stringify(id));
+    } else {
+      localStorage.removeItem('orderId');
+    }
+  };
+
+  const login = (userData) => {
+    localStorage.removeItem('cart');
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  };
+  const logout = () => {
+    setUser(null);
+    setOrderId(null);
+    localStorage.removeItem('cart');
+    localStorage.removeItem('user');
+  };
+  const signup = (userData) => {
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  };
 
   return (
-    <UserContext.Provider value={{ user, login, logout, signup }}>
+    <UserContext.Provider value={{ user, login, logout, signup, orderId, setOrderId }}>
       {children}
     </UserContext.Provider>
   );

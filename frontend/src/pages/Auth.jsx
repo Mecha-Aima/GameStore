@@ -64,10 +64,28 @@ function LoginForm() {
         credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
+      console.log("login response:", res);
       if (res.ok) {
         const data = await res.json();
-        login(data.user);
-        console.log(data.user);
+        // Fetch customer details
+        let userWithCustomer = { ...data.user };
+        try {
+          const custRes = await fetch(`http://localhost:3000/api/customer?user_id=${data.user.user_id}`);
+          if (custRes.ok) {
+            const customer = await custRes.json();
+            userWithCustomer = {
+              ...userWithCustomer,
+              phone: customer.phone,
+              full_name: customer.full_name,
+              address: customer.address
+            };
+          }
+          console.log("userWithCustomer:", userWithCustomer);
+        } catch (err) {
+          // If customer fetch fails, just use user info
+        }
+        login(userWithCustomer);
+        console.log(userWithCustomer);
         // redirect to home page
         navigate('/home');
       } else {

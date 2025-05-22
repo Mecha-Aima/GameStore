@@ -16,7 +16,6 @@ export default function Cart() {
     const navigate = useNavigate();
     const { cart, removeFromCart, updateQuantity } = useCart();
     const { user, orderId } = useUser();
-    console.log("Cart: ", cart)
 
     // Use game context for recommended items
     const { getGameById } = useGames();
@@ -36,15 +35,30 @@ export default function Cart() {
         }, 0);
     };
 
-    // Get today's date in readable format
+    useEffect(() => {
+        const stored = localStorage.getItem('orderId');
+        if (stored) {
+            console.log("Order ID: ", stored);
+        }
+        console.log("Order ID: ", orderId)
+        if (!user || !orderId) return;
+        console.log(orderId)
+        const fetchOrder = async () => {
+            const res = await fetch(`/api/orders/get?order_id=${orderId}`,
+            {
+                method: 'GET',
+            });
+            const data = await res.json();
+            console.log("Data: ", data)
+        }
+        fetchOrder();
+    }, []);
+
     const today = new Date().toLocaleDateString();
 
     return (
         <div className="min-h-screen text-white flex bg-navy-100 flex-col gap-8 items-center justify-center h-900px">
             <Header />
-            {console.log("Cart: ", cart)}
-            {console.log("User: ", user)}
-
             <section className="py-8 antialiased bg-slate-900 md:py-16 rounded-lg mb-24 mt-32">
             <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
                 <h2 className="text-xl font-semibold text-white sm:text-2xl">Shopping Cart</h2>
@@ -62,11 +76,11 @@ export default function Cart() {
                                 <label htmlFor={`counter-input-${item.game_id}`} className="sr-only">Choose quantity:</label>
                                 <div className="flex items-center justify-between md:order-3 md:justify-end">
                                     <div className="flex items-center">
-                                        <button type="button" id={`decrement-button-${item.game_id}`} data-input-counter-decrement={`counter-input-${item.game_id}`} style={{ padding: '4px 12px' }} className="shrink-0 items-center justify-center rounded-md bg-teal-90 border border-navy-50 hover:bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gray-700" onClick={() => updateQuantity(item.game_id, item.quantity - 1)} disabled={item.quantity <= 1}>
+                                        <button type="button" id={`decrement-button-${item.game_id}`} data-input-counter-decrement={`counter-input-${item.game_id}`} style={{ padding: '4px 12px' }} className="shrink-0 items-center justify-center rounded-md bg-teal-50 border border-navy-50 hover:bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gray-700 disabled:opacity-50" onClick={() => updateQuantity(item.game_id, item.quantity - 1)} disabled={item.quantity <= 1}>
                                             <img src={minus} alt="minus" style={{ width: '16px', height: '16px', padding: '0px' }} />
                                         </button>
                                         <input type="text" id={`counter-input-${item.game_id}`} data-input-counter className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-white focus:outline-none focus:ring-0" placeholder="" value={item.quantity} required readOnly />
-                                        <button type="button" id={`increment-button-${item.game_id}`} data-input-counter-increment={`counter-input-${item.game_id}`} style={{ padding: '4px 12px' }} className="shrink-0 items-center justify-center rounded-md bg-teal-90 border border-navy-50 hover:bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gray-700" onClick={() => updateQuantity(item.game_id, item.quantity + 1)}>
+                                        <button type="button" id={`increment-button-${item.game_id}`} data-input-counter-increment={`counter-input-${item.game_id}`} style={{ padding: '4px 12px' }} className="shrink-0 items-center justify-center rounded-md bg-teal-50 border border-navy-50 hover:bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gray-700 disabled:opacity-50" onClick={() => updateQuantity(item.game_id, item.quantity + 1)} disabled={item.stock <= item.quantity}>
                                             <img src={add} alt="add" style={{ width: '16px', height: '16px', padding: '0px' }} />
                                         </button>
                                     </div>
@@ -108,7 +122,9 @@ export default function Cart() {
                                         </p>
                                     </div>
                                     <div className="mt-6 flex items-center gap-2.5 w-full">
-                                        <button type="button" className="inline-flex w-full items-center justify-center rounded-lg bg-teal-90 px-5 py-2.5 text-sm font-medium text-white hover:bg-navy-50 focus:outline-none focus:ring-4 focus:ring-primary-800">
+                                        <button 
+                                            type="button" 
+                                            className="inline-flex w-full items-center justify-center rounded-lg bg-teal-90 px-5 py-2.5 text-sm font-medium text-white hover:bg-navy-50 focus:outline-none focus:ring-4 focus:ring-primary-800">
                                             <svg className="-ms-2 me-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4" />
                                             </svg>
@@ -155,7 +171,7 @@ export default function Cart() {
                             </div>
                         </div>
 
-                        <button onClick={() => navigate('/ordersummary')} className="w-full mt-6 flex items-center justify-center rounded-lg bg-teal-90 px-5 py-2.5 text-sm font-medium text-white hover:bg-navy-50 focus:outline-none focus:ring-4 focus:ring-primary-800">
+                        <button onClick={() => navigate('/ordersummary')} className="w-full mt-6 flex items-center justify-center rounded-lg bg-teal-50 px-5 py-2.5 text-sm font-medium text-white hover:bg-navy-50 focus:outline-none focus:ring-4 focus:ring-primary-800">
                             Proceed to Checkout
                         </button>
                     </div>

@@ -8,7 +8,7 @@ const GameCard = ({title, price, genre, imageUrl, onClick}) => {
     };
 
     return (
-        <div className='w- game-card rounded-md cursor-pointer' onClick={handleClick}>
+        <div className='game-card rounded-md cursor-pointer' onClick={handleClick}>
             <div className="group relative block overflow-hidden rounded-md">
                 <img
                     src={imageUrl}

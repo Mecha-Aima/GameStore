@@ -16,7 +16,7 @@ function GameList() {
       <ul>
         {games.map(game => (
           <li key={game.game_id}>
-            {game.title} ({game.genre}) - ${game.price}
+            {game.title} ({game.genre}) - Rs.{game.price}
           </li>
         ))}
       </ul>

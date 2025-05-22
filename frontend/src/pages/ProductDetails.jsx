@@ -40,28 +40,28 @@ const ProductDetails = () => {
     const isInCart = cart.some(item => item.game_id === game.game_id);
 
     const handleAddToCart = async () => {
+        console.log("Handle add to cart")
         if (!user) return;
         setLoading(true);
-        console.log("Handling add to cart...")
         try {
+            console.log("Order ID: ", orderId)
             if (cart.length === 0 && !orderId) {
                 // Create order first
-                console.log("Creating order...")
                 const res = await fetch('/api/orders/add', {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ customer_id: user.user_id }),
                 });
                 const data = await res.json();
                 console.log("Data: ", data)
                 if (res.ok && data.order?.order_id) {
-                    console.log("Order created successfully.")
                     setOrderId(data.order.order_id);
+                    console.log("Order added successfully")
                 }
             }
     
             addToCart(game);
-            console.log("Cart: ", cart)
         } finally {
             setLoading(false);
         }
@@ -99,7 +99,7 @@ const ProductDetails = () => {
                     <div className="bg-neutral-800 rounded-2xl p-8 flex flex-col gap-4 w-full mt-4 shadow-lg">
                         <div className="flex items-center justify-between">
                             <span className="text-lg font-bold text-white">Price: Rs. {typeof game.price === 'number' ? game.price.toFixed(2) : game.price}</span>
-                            <span className="text-green-400 font-medium">In Stock</span>
+                            <span className="text-green-400 font-medium">In Stock: {game.stock}</span>
                         </div>
                         <button 
                             className="bg-teal-400 hover:bg-teal-600 text-black text-lg font-semibold rounded-xl py-3 disabled:opacity-60" 
@@ -108,8 +108,6 @@ const ProductDetails = () => {
                         >
                             {isInCart ? 'Added to Cart' : (loading ? 'Adding...' : 'Add to Cart')}
                         </button>
-                        {console.log("Cart: ", cart)}
-                        {console.log("Order ID: ", orderId)}
                     </div>
                 </div>
             </div>

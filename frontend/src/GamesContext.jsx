@@ -9,22 +9,35 @@ export function GamesProvider({ children }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchGames = async () => {
+    const fetchGamesAndStock = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:3000/api/games');
-        console.log("Games data received:", response.data);
-        setGames(response.data);
+        // Fetch all games
+        const gamesResponse = await axios.get('http://localhost:3000/api/games');
+        const gamesData = gamesResponse.data;
+
+        // Fetch stock for each game
+        const gamesWithStock = await Promise.all(
+          gamesData.map(async (game) => {
+            const stockResponse = await axios.get('http://localhost:3000/api/games/stock', {
+              params: { game_id: game.game_id }
+            });
+            return { ...game, stock: stockResponse.data.stock };
+          })
+        );
+
+        setGames(gamesWithStock);
+        console.log("Games with stock:", gamesWithStock);
         setError(null);
       } catch (err) {
-        setError('Failed to fetch games');
-        console.error('Error fetching games:', err);
+        setError('Failed to fetch games or stock');
+        console.error('Error fetching games or stock:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGames();
+    fetchGamesAndStock();
   }, []);
 
   const getGamesByGenre = (genre) => {
@@ -32,9 +45,7 @@ export function GamesProvider({ children }) {
   };
 
   const getGameById = (gameId) => { 
-    console.log("Looking for game with ID:", gameId, "in games:", games);
     const game = games.find(game => game.game_id === gameId);
-    console.log("Found game:", game);
     return game;
   };
 
@@ -43,7 +54,7 @@ export function GamesProvider({ children }) {
     loading,
     error,
     getGamesByGenre,
-    getGameById
+    getGameById,
   };
 
   return (

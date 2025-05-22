@@ -7,13 +7,64 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../CartContext';
 
 const OrderSummary = () => {
-  const { user, login, logout } = useUser();
+  const { user, login, logout, orderId } = useUser();
   const { cart } = useCart();
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState('');
 
   const handlePaymentChange = (e) => {
     setPaymentMethod(e.target.value);
+  };
+
+  const handleConfirmOrder = () => {
+    const addOrderItem = async () => {
+      for (const item of cart) {
+        const res = await fetch('/api/order_items/add', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            order_id: orderId,
+            game_id: item.game_id,
+            unit_price: item.price,
+            quantity: item.quantity
+          })
+        });
+        if (!res.ok) {
+          console.error('Failed to add order item');
+        }
+        else {
+          console.log('Order item added successfully');
+        }
+      };
+    };
+
+    const addPayment = async () => {
+      const res = await fetch('/api/payment/add', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          paymentMethod: paymentMethod,
+          status:  paymentMethod === 'Cash On Delivery'? 'Pending' : 'Paid'
+        })
+      });
+      if (!res.ok) {
+        console.error('Failed to add payment');
+        console.error(res);
+      }
+      else {
+        console.log('Payment added successfully');
+      }
+    }
+
+    addOrderItem();
+    addPayment();
   };
 
   // Calculate order summary values from cart
@@ -114,7 +165,7 @@ const OrderSummary = () => {
 
       <div className="order-actions flex justify-between w-full max-w-3xl">
         <button onClick={() => navigate('/cart')} className="back-to-cart-button bg-navy-90 text-white hover:bg-navy-40">Back to Cart</button>
-        <button className="confirm-order-button bg-teal-90 text-white hover:bg-navy-50">Confirm Order</button>
+        <button onClick={handleConfirmOrder} className="confirm-order-button bg-teal-50 text-white hover:bg-navy-50 disabled:opacity-50" disabled={!paymentMethod}>Confirm Order</button>
       </div>
     </div>
     </div>

@@ -14,7 +14,6 @@ export function CartProvider({ children }) {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Add a game to the cart
   const addToCart = (game) => {
     setCart((prevCart) => {
       if (prevCart.find(item => item.game_id === game.game_id)) {
@@ -24,12 +23,10 @@ export function CartProvider({ children }) {
     });
   };
 
-  // Remove a game from the cart
   const removeFromCart = (gameId) => {
     setCart((prevCart) => prevCart.filter(item => item.game_id !== gameId));
   };
 
-  // Update quantity of a game in the cart
   const updateQuantity = (gameId, newQuantity) => {
     setCart((prevCart) =>
       prevCart.map(item =>
@@ -38,7 +35,6 @@ export function CartProvider({ children }) {
     );
   };
 
-  // Optionally, clear the cart
   const clearCart = () => setCart([]);
 
   return (

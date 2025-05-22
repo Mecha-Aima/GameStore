@@ -35,6 +35,23 @@ def get_game_by_id(game_id):
             
         return jsonify(dict(game))
 
+@games_bp.route('/api/games/stock', methods=['GET'])
+def get_game_stock():
+    game_id = request.args.get('game_id')
+    if not game_id:
+        return jsonify({'error': "No game ID provided"}), 400
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT quantity FROM Inventory WHERE game_id = :game_id"),
+            {"game_id": game_id}
+        )
+        stock = result.scalar_one_or_none()
+        if stock is None:
+            return jsonify({'error': 'Game not found in inventory'}), 404
+        return jsonify({'stock': stock}), 200
+    
+
+
 @games_bp.route('/api/auth/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -125,7 +142,7 @@ def add_order():
     if not customer_id:
         return jsonify({'error': 'customer_id is required.'}), 400
 
-    order_date = date.today().isoformat()
+    order_date = date.today()
     status = 'Pending'
 
     try:
@@ -135,7 +152,6 @@ def add_order():
             max_id_row = result.mappings().first()
             max_order_id = max_id_row['max_id'] if max_id_row['max_id'] is not None else 0
             new_order_id = max_order_id + 1
-            print(new_order_id, order_date, customer_id, status)
 
             # Insert new order
             conn.execute(
@@ -148,6 +164,17 @@ def add_order():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
+@games_bp.route('/api/orders/get', methods=['GET'])
+def get_order():
+    order_id = request.args.get('order_id')
+    print("Order ID: ", order_id)
+    if not order_id:
+        return jsonify({'error': 'order_id is required.'}), 400
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM [Order] WHERE order_id = :order_id"), {"order_id": order_id})
+        row = result.mappings().first()
+        print("Row: ", row)
+        return jsonify(dict(row) if row else {}), 200
 
 @games_bp.route('/api/order_items/add', methods=['POST'])
 def add_order_item():
@@ -194,4 +221,32 @@ def get_customer():
         return jsonify({'error': str(e)}), 500
     
 
-    
+@games_bp.route('/api/payment/add', methods=['POST'])
+def add_payment():
+    data = request.get_json()
+    order_id = data.get('orderId')
+    payment_method = data.get('paymentMethod')
+    status = data.get('status')
+    payment_date = date.today()
+    print("Order ID: ", order_id)
+    print("Payment Method: ", payment_method)
+    print("Status: ", status)
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT MAX(payment_id) as max_id FROM [Payment]" ))
+            max_id_row = result.mappings().first()
+            max_order_id = max_id_row['max_id'] if max_id_row['max_id'] else 0
+            new_order_id = max_order_id + 1
+            print("New Payment ID: ", new_order_id)
+
+            # Insert new payment
+            res = conn.execute(text("INSERT INTO Payment (payment_id, order_id, method, status, payment_date) VALUES (:payment_id, :order_id, :payment_method, :status, :payment_date)"),
+                               {"payment_id": new_order_id, "order_id": order_id, "payment_method": payment_method, "status": status, "payment_date": payment_date})
+            conn.commit()
+            return jsonify({'message': 'Payment added successfully.', 'payment': {'payment_id': new_order_id, 'order_id': order_id, 'payment_method': payment_method, 'status': status, 'payment_date': payment_date}}), 201
+
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+

@@ -13,7 +13,7 @@ const GameCard = ({title, price, genre, imageUrl, onClick}) => {
                 <img
                     src={imageUrl}
                     alt=""
-                    className="h-[400px] w-full object-cover transition duration-500 group-hover:scale-105 rounded-t-xl"
+                    className="h-[600px] w-full object-cover transition duration-500 group-hover:scale-105 rounded-t-xl object-top"
                 />
 
                 <div className="relative card-content p-6">

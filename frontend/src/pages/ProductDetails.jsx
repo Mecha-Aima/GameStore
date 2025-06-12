@@ -7,6 +7,7 @@ Purchase Box: Price, quantity selector, "Add to Cart" button, stock availability
 */
 
 import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import pc from "../assets/icons/pc.svg";
@@ -16,7 +17,6 @@ import mobile from "../assets/icons/mobile.svg";
 import InfoBadge from "../components/Badges";
 import { useCart } from '../CartContext';
 import { useUser } from '../UserContext';
-import { useState } from 'react';
 
 const ProductDetails = () => {
     const location = useLocation();
@@ -24,6 +24,11 @@ const ProductDetails = () => {
     const { cart, addToCart } = useCart();
     const { user, orderId, setOrderId } = useUser();
     const [loading, setLoading] = useState(false);
+
+    // Scroll to top when component mounts
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     if (!game) {
         return (

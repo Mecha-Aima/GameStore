@@ -67,27 +67,35 @@ function LoginForm() {
       console.log("login response:", res);
       if (res.ok) {
         const data = await res.json();
-        // Fetch customer details
-        let userWithCustomer = { ...data.user };
-        try {
-          const custRes = await fetch(`http://localhost:3000/api/customer?user_id=${data.user.user_id}`);
-          if (custRes.ok) {
-            const customer = await custRes.json();
-            userWithCustomer = {
-              ...userWithCustomer,
-              phone: customer.phone,
-              full_name: customer.full_name,
-              address: customer.address
-            };
+        
+        // Check user role for navigation
+        if (data.user.role === 'admin') {
+          // Admin users don't need customer details
+          login(data.user);
+          console.log(data.user);
+          navigate('/admin');
+        } else {
+          // Fetch customer details for non-admin users
+          let userWithCustomer = { ...data.user };
+          try {
+            const custRes = await fetch(`http://localhost:3000/api/customer?user_id=${data.user.user_id}`);
+            if (custRes.ok) {
+              const customer = await custRes.json();
+              userWithCustomer = {
+                ...userWithCustomer,
+                phone: customer.phone,
+                full_name: customer.full_name,
+                address: customer.address
+              };
+            }
+            console.log("userWithCustomer:", userWithCustomer);
+          } catch (err) {
+            // If customer fetch fails, just use user info
           }
-          console.log("userWithCustomer:", userWithCustomer);
-        } catch (err) {
-          // If customer fetch fails, just use user info
+          login(userWithCustomer);
+          console.log(userWithCustomer);
+          navigate('/home');
         }
-        login(userWithCustomer);
-        console.log(userWithCustomer);
-        // redirect to home page
-        navigate('/home');
       } else {
         // handle error
         console.log(`Error ${res.status}: Invalid email or password`);

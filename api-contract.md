@@ -1,59 +1,36 @@
+## 🛣️ API Endpoints
 
----
+### 🎮 Game Management (`/api/games`)
 
-## 🏠 Home Page
+| Method | Endpoint | Description | Access Level |
+|--------|----------|-------------|--------------|
+| `GET` | `/api/games` | Retrieve all games with stock info | Public |
+| `GET` | `/api/games/<id>` | Get specific game details | Public |
+| `GET` | `/api/games/stock` | Check stock for specific game | Public |
+| `POST` | `/api/games/add` | Add new game to catalog | Admin |
+| `POST` | `/api/upload-image` | Upload game cover images | Admin |
 
-### 🔍 Game Listing (Header Search / Category Filter / Featured Grid)
+### 👤 User Authentication (`/api/auth`)
 
-| Endpoint         | Method | Description                         | Query Parameters                        | Request Body | Response     |
-|------------------|--------|-------------------------------------|------------------------------------------|---------------|--------------|
-| `/api/games`     | GET    | List all games or filter by genre/search | `genre` (string), `q` (string)      | N/A           | Game List    |
+| Method | Endpoint | Description | Access Level |
+|--------|----------|-------------|--------------|
+| `POST` | `/api/auth/login` | User authentication | Public |
+| `POST` | `/api/auth/signup` | User registration | Public |
+| `POST` | `/api/auth/create_customer` | Create customer profile | Authenticated |
 
----
+### 👥 Customer Management (`/api/customers`)
 
-## 📄 Product Details Page
+| Method | Endpoint | Description | Access Level |
+|--------|----------|-------------|--------------|
+| `GET` | `/api/customers` | Get all customers | Admin |
+| `GET` | `/api/customer` | Get specific customer details | Authenticated |
 
-### 📌 Game Details
+### 🛒 Order Processing (`/api/orders`)
 
-| Endpoint              | Method | Description                | Path Parameters | Request Body | Response        |
-|-----------------------|--------|----------------------------|------------------|--------------|-----------------|
-| `/api/games/{id}`     | GET    | Get game details by ID     | `id` (integer)   | N/A          | Game Details     |
-| `/api/games/{id}`     | PUT    | Update game (Admin only)   | `id` (integer)   | `Game` schema| Updated Game     |
-| `/api/games/{id}`     | DELETE | Delete a game (Admin only) | `id` (integer)   | N/A          | Success message  |
-
----
-
-## 🛒 Cart Page
-
-### 🧾 Cart Items + Order Summary Sidebar
-
-| Endpoint               | Method | Description                          | Path/Query Params | Request Body                                          | Response     |
-|------------------------|--------|--------------------------------------|-------------------|--------------------------------------------------------|--------------|
-| `/api/cart`            | GET    | Get current user's cart              | N/A               | N/A                                                    | Cart Items   |
-| `/api/cart`            | POST   | Add or update item in cart           | N/A               | `{ gameId: integer, quantity: integer }`               | Updated Cart |
-| `/api/cart/{gameId}`   | DELETE | Remove an item from cart             | `gameId` (int)    | N/A                                                    | Updated Cart |
-
----
-
-## 📦 Order Summary Page
-
-### 🧾 Final Summary and Confirmation
-
-| Endpoint              | Method | Description                     | Path Params | Request Body                                 | Response     |
-|-----------------------|--------|---------------------------------|-------------|-----------------------------------------------|--------------|
-| `/api/order/preview`  | GET    | Get a summary of current cart   | N/A         | N/A                                           | Summary Info |
-| `/api/order/confirm`  | POST   | Place an order from cart        | N/A         | `{ paymentMethod: string }`                   | Order Placed |
-| `/api/payment`        | POST   | Simulate a payment transaction  | N/A         | `{ orderId: integer, method: string }`        | Payment Info |
-
----
-
-## 🔐 Login & Registration Page
-
-### 🔑 Auth Forms
-
-| Endpoint               | Method | Description        | Request Body                                                            | Response        |
-|------------------------|--------|--------------------|-------------------------------------------------------------------------|-----------------|
-| `/api/auth/login`      | POST   | Login user         | `{ email: string, password: string }`                                   | JWT or session  |
-| `/api/auth/register`   | POST   | Register new user  | `{ username: string, email: string, password: string }`                 | User Info       |
-
----
+| Method | Endpoint | Description | Access Level |
+|--------|----------|-------------|--------------|
+| `GET` | `/api/orders` | Retrieve all orders summary | Admin |
+| `POST` | `/api/orders/add` | Create new order | Authenticated |
+| `GET` | `/api/orders/get` | Get specific order details | Authenticated |
+| `POST` | `/api/order_items/add` | Add items to order | Authenticated |
+| `POST` | `/api/payment/add` | Process payment for order | Authenticated |

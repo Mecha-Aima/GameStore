@@ -49,91 +49,36 @@ def get_game_stock():
         if stock is None:
             return jsonify({'error': 'Game not found in inventory'}), 404
         return jsonify({'stock': stock}), 200
-    
 
-
-@games_bp.route('/api/auth/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-    if not email or not password:
-        return jsonify({'error': 'Email and password are required.'}), 400
-    
-    with engine.connect() as conn:
-        result = conn.execute(
-            text("SELECT * FROM [User] WHERE email = :email AND password = :password"),
-            {"email": email, "password": password}
-        )
-        user = result.mappings().first()
-        if user is None:
-            return jsonify({'error': 'Invalid username or password.'}), 401
-
-        session['user_id'] = user['user_id']
-        session['username'] = user['username']
-        session['email'] = user['email']
-        session['role'] = user['role']
-        return jsonify({'message': 'Login successful', 'user': {'user_id': user['user_id'], 'username': user['username'], 'role': user['role']}})
-
-
-@games_bp.route('/api/auth/signup', methods=['POST'])
-def signup():
-    data = request.get_json()
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
-    role = 'customer'  # Default role for signup
-
-    if not username or not email or not password:
-        return jsonify({'error': 'Username, email, and password are required.'}), 400
-
+@games_bp.route('/api/orders', methods=['GET'])
+def get_orders():
     try:
         with engine.connect() as conn:
-            existing = conn.execute(
-                text("SELECT * FROM [User] WHERE email = :email OR username = :username"),
-                {"email": email, "username": username}
-            ).mappings().first()
-            if existing:
-                return jsonify({'error': 'Email or username already exists.'}), 409
-
-            # Get max user_id
-            result = conn.execute(text("SELECT MAX(user_id) AS max_id FROM [User]"))
-            max_id_row = result.mappings().first()
-            max_user_id = max_id_row['max_id'] if max_id_row['max_id'] is not None else 0
-            new_user_id = max_user_id + 1
-
-            # Insert new user
-            conn.execute(
-                text("INSERT INTO [User] (user_id, username, email, password, role) VALUES (:user_id, :username, :email, :password, :role)"),
-                {"user_id": new_user_id, "username": username, "email": email, "password": password, "role": role}
-            )
-            conn.commit()
-            return jsonify({'message': 'Signup successful', 'user': {'user_id': new_user_id, 'username': username, 'role': role}}), 201
+            # Create the OrderSummaryView if it doesn't exist
+            conn.execute(text("""
+                IF NOT EXISTS (SELECT * FROM sys.views WHERE name = 'OrderSummaryView')
+                BEGIN
+                    EXEC('CREATE VIEW OrderSummaryView AS
+                    SELECT 
+                        o.order_id, o.order_date, c.full_name AS customer_name,
+                        c.phone AS customer_phone, o.status AS order_status,
+                        p.status AS payment_status, p.method AS payment_method,
+                        SUM(oi.unit_price * oi.quantity) AS total_amount
+                    FROM [Order] o
+                    JOIN Customer c ON o.customer_id = c.user_id
+                    JOIN OrderItem oi ON o.order_id = oi.order_id
+                    LEFT JOIN Payment p ON o.order_id = p.order_id
+                    GROUP BY o.order_id, o.order_date, c.full_name, c.phone, o.status, p.status, p.method');
+                END
+            """))
+            
+            # Query the view
+            result = conn.execute(text("SELECT * FROM OrderSummaryView ORDER BY order_date DESC"))
+            orders = [dict(row) for row in result.mappings().all()]
+            
+            return jsonify(orders)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-
-@games_bp.route('/api/auth/create_customer', methods=['POST'])
-def create_customer():
-    data = request.get_json()
-    user_id = data.get('user_id')
-    full_name = data.get('full_name')
-    phone = data.get('phone')
-    address = data.get('address')
-    if not user_id or not full_name or not phone or not address:
-        return jsonify({'error': 'user_id, full_name, phone, and address are required.'}), 400
-
-    try:
-        with engine.connect() as conn:
-            conn.execute(
-                text("INSERT INTO Customer (user_id, full_name, phone, address) VALUES (:user_id, :full_name, :phone, :address)"),
-                {"user_id": user_id, "full_name": full_name, "phone": phone, "address": address}
-            )
-            conn.commit()
-            return jsonify({'message': 'Customer created successfully.', }), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
 
 @games_bp.route('/api/orders/add', methods=['POST'])
 def add_order():
@@ -196,30 +141,6 @@ def add_order_item():
             return jsonify({'message': 'Order item created successfully.', 'order_item': {'order_id': order_id, 'game_id': game_id, 'unit_price': unit_price, 'quantity': quantity}}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-
-@games_bp.route('/api/customer', methods=['GET'])
-def get_customer():
-    user_id = request.args.get('user_id') or (request.json.get('user_id') if request.is_json else None)
-    if not user_id:
-        return jsonify({'error': 'user_id is required as a query parameter or in JSON body.'}), 400
-    try:
-        user_id = int(user_id)
-    except (ValueError, TypeError):
-        return jsonify({'error': 'user_id must be an integer.'}), 400
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(
-                text("SELECT * FROM Customer WHERE user_id = :user_id"),
-                {"user_id": user_id}
-            )
-            customer = result.mappings().first()
-            if not customer:
-                return jsonify({'error': 'Customer not found.'}), 404
-            return jsonify(dict(customer)), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
 
 @games_bp.route('/api/payment/add', methods=['POST'])
 def add_payment():
@@ -249,4 +170,91 @@ def add_payment():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@games_bp.route('/api/games/add', methods=['POST'])
+def add_game():
+    data = request.get_json()
+    title = data.get('title')
+    description = data.get('description')
+    price = data.get('price')
+    stock = data.get('stock')
+    release_date = data.get('release_date')
+    genre = data.get('genre')
+    platforms = data.get('platforms')
+    image_url = data.get('image_url')
+    
+    # Validate required fields
+    if not all([title, price, stock, release_date, genre, platforms]):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    try:
+        with engine.connect() as conn:
+            # Get max game_id
+            result = conn.execute(text("SELECT MAX(game_id) AS max_id FROM Game"))
+            max_id_row = result.mappings().first()
+            max_game_id = max_id_row['max_id'] if max_id_row['max_id'] else 0
+            new_game_id = max_game_id + 1
+
+            # Insert new game
+            conn.execute(
+                text("INSERT INTO Game (game_id, title, description, genre, platform, price, release_date, image_url) VALUES (:game_id, :title, :description, :genre, :platforms, :price, :release_date, :image_url)"),
+                {
+                    "game_id": new_game_id, 
+                    "title": title, 
+                    "description": description, 
+                    "genre": genre, 
+                    "platforms": platforms, 
+                    "price": price, 
+                    "release_date": release_date, 
+                    "image_url": image_url
+                }
+            )
+            
+            # Add initial stock to Inventory table
+            conn.execute(
+                text("INSERT INTO Inventory (game_id, quantity) VALUES (:game_id, :quantity)"),
+                {"game_id": new_game_id, "quantity": stock}
+            )
+            
+            conn.commit()
+            
+            return jsonify({
+                'message': 'Game created successfully', 
+                'game': {
+                    'game_id': new_game_id, 
+                    'title': title, 
+                    'description': description, 
+                    'genre': genre, 
+                    'platforms': platforms, 
+                    'price': price, 
+                    'release_date': release_date, 
+                    'image_url': image_url,
+                    'stock': stock
+                }
+            }), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@games_bp.route('/api/upload-image', methods=['POST'])
+def upload_image():
+    try:
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image file provided'}), 400
+        
+        image = request.files['image']
+        if image.filename == '':
+            return jsonify({'error': 'No image file selected'}), 400
+        
+        # Get the filename and ensure directory exists
+        filename = image.filename
+        # Navigate from backend/routes directory to frontend/public/game-covers
+        upload_dir = os.path.join('..', 'frontend', 'public', 'game-covers')
+        
+        # Save the file
+        file_path = os.path.join(upload_dir, filename)
+        print("File path: ", file_path)
+        image.save(file_path)
+        
+        return jsonify({'message': 'Image uploaded successfully', 'filename': filename}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 

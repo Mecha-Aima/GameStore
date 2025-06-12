@@ -4,19 +4,23 @@ import cash from '../assets/icons/cash.svg'
 import './OrderSummary.css';
 import { useUser } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { useCart } from '../CartContext';
+import OrderConfirmationModal from '../components/OrderConfirmationModal';
 
 const OrderSummary = () => {
   const { user, login, logout, orderId } = useUser();
   const { cart } = useCart();
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const handlePaymentChange = (e) => {
     setPaymentMethod(e.target.value);
   };
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     const addOrderItem = async () => {
       for (const item of cart) {
         const res = await fetch('/api/order_items/add', {
@@ -63,8 +67,15 @@ const OrderSummary = () => {
       }
     }
 
-    addOrderItem();
-    addPayment();
+    try {
+      await addOrderItem();
+      await addPayment();
+      // Show confirmation modal after successful order processing
+      setShowConfirmationModal(true);
+    } catch (error) {
+      console.error('Error processing order:', error);
+      // You could add error handling here
+    }
   };
 
   // Calculate order summary values from cart
@@ -74,31 +85,32 @@ const OrderSummary = () => {
   const total = subtotal - discount + tax;
 
   return (
-    <div className="bg-navy-100 p-24">
-    <div className="order-summary-container flex items-center flex-col w-full justify-between bg-slate-900 py-24 h-fit">
+    <div className="bg-dark-bg p-24">
+      <Header />
+    <div className="order-summary-container flex items-center flex-col w-full justify-between bg-dark-bg-2 py-24 h-fit rounded-xl mt-16">
       <h1 className="order-summary-title text-white">Order Summary</h1>
       <p className="order-summary-subtitle text-gray-400">Here's a summary of your order.</p>
 
       <div className="order-items-container max-w-3xl w-full">
         {cart.map((item) => (
-          <div key={item.game_id} className="order-item bg-navy-90 shadow-lg">
+          <div key={item.game_id} className="order-item bg-dark-bg shadow-lg">
             <div className="order-item-image">
               <img src={item.image_url} alt={item.title} />
             </div>
             <div className="order-item-details">
-              <div className="order-item-title text-navy-10">{item.title}</div>
+              <div className="order-item-title text-white">{item.title}</div>
               <div className="order-item-genre text-gray-400">{item.genre}</div>
             </div>
             <div className="order-item-pricing">
               <div className="order-item-quantity text-gray-400">Qty: {item.quantity}</div>
-              <div className="order-item-price text-teal-10">Rs. {(item.quantity || 1) * (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0)}</div>
+              <div className="order-item-price text-mint-70">Rs. {(item.quantity || 1) * (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0)}</div>
             </div>
           </div>
         ))}
       </div>
 
       <div className="order-details-container flex gap-4 max-w-3xl w-full">
-        <div className="order-totals w-1/2 bg-navy-90">
+        <div className="order-totals w-1/2 bg-dark-bg">
           <div className="order-total-row">
             <span className="text-gray-400">Subtotal</span>
             <span className="text-white">Rs. {subtotal.toFixed(0)}</span>
@@ -113,11 +125,11 @@ const OrderSummary = () => {
           </div>
           <div className="order-total-row grand-total">
             <span className="text-gray-400">Grand Total</span>
-            <span className="text-teal-10">Rs. {total.toFixed(0)}</span>
+            <span className="text-mint-70">Rs. {total.toFixed(0)}</span>
           </div>
         </div>
 
-        <div className="shipping-info w-1/2 bg-navy-90">
+        <div className="shipping-info w-1/2 bg-dark-bg">
           <h2 className="shipping-info-title text-white">Shipping Information</h2>
           <div className="shipping-details">
             <div className="shipping-detail-row">
@@ -136,7 +148,7 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <div className="payment-method max-w-3xl w-full bg-navy-90">
+      <div className="payment-method max-w-3xl w-full bg-dark-bg">
         <h2 className="payment-method-title text-white text-left">Select Payment Method:</h2>
 
         {[
@@ -164,10 +176,16 @@ const OrderSummary = () => {
       </div>
 
       <div className="order-actions flex justify-between w-full max-w-3xl">
-        <button onClick={() => navigate('/cart')} className="back-to-cart-button bg-navy-90 text-white hover:bg-navy-40">Back to Cart</button>
+        <button onClick={() => navigate('/cart')} className="back-to-cart-button bg-dark-bg-3 text-white hover:bg-dark-bg">Back to Cart</button>
         <button onClick={handleConfirmOrder} className="confirm-order-button bg-teal-50 text-white hover:bg-navy-50 disabled:opacity-50" disabled={!paymentMethod}>Confirm Order</button>
       </div>
     </div>
+
+    {/* Order Confirmation Modal */}
+    <OrderConfirmationModal 
+      isVisible={showConfirmationModal} 
+      onClose={() => setShowConfirmationModal(false)} 
+    />
     </div>
   );
 };

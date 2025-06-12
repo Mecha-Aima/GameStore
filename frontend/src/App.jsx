@@ -8,8 +8,11 @@ import ProductDetails from './pages/ProductDetails';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import GameList from './pages/GameList';
+import AdminPanel from './pages/AdminPanel';
+import AddGame from './pages/AddGame';
 import { UserProvider } from './UserContext';
 import { CartProvider } from './CartContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 
@@ -29,6 +32,16 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/games" element={<GameList />} />
+              <Route path="/admin" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminPanel />
+                </ProtectedRoute>
+              } />
+              <Route path="/add-game" element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AddGame />
+                </ProtectedRoute>
+              } />
             </Routes>
           </CartProvider>
         </GamesProvider>

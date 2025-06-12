@@ -1,0 +1,173 @@
+/* Order Summary Styles */
+
+/* Background and container color */
+.order-summary-container {
+  padding: 48px 20px;
+  border-radius: 10px;
+}
+
+/* Title and subtitle */
+.order-summary-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.order-summary-subtitle {
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
+/* Order Items Container */
+.order-items-container {
+  margin-top: 20px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.order-item-image img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+}
+
+.order-item-details {
+  flex: 1;
+  margin-left: 15px;
+}
+
+.order-item-title {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.order-item-genre {
+  font-size: 0.875rem;
+}
+
+.order-item-pricing {
+  text-align: right;
+}
+
+.order-item-quantity,
+.order-item-price {
+  font-size: 1rem;
+}
+
+/* Totals */
+.order-totals {
+  padding: 15px;
+  border-radius: 10px;
+  height: 200px;
+}
+
+.order-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.discount {
+  color: #f87171; /* Red for discount */
+}
+
+.grand-total {
+  font-weight: bold;
+}
+
+/* Payment Method Section */
+.payment-method {
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.payment-method-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.payment-option input[type='radio'] {
+  margin-right: 10px;
+}
+
+.payment-option label {
+  font-size: 1rem;
+}
+
+.payment-option img {
+  width: 25px;
+  margin-right: 10px;
+}
+
+/* Actions (Buttons) */
+.order-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.back-to-cart-button,
+.confirm-order-button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.back-to-cart-button:hover {
+  background-color: #2d3a4b;
+}
+
+.confirm-order-button:hover {
+  background-color: #4bc0a0;
+}
+
+.order-details-container {
+  margin-top: 20px;
+  height: 100%;
+}
+
+.shipping-info {
+  padding: 15px;
+  border-radius: 10px;
+  height: 200px;
+}
+
+.shipping-info-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.shipping-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shipping-detail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-label {
+  font-weight: 500;
+}
+
+.detail-value {
+  text-align: right;
+}

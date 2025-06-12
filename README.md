@@ -1,160 +1,158 @@
-## Summary.
+# 🎮 GameStore
 
-This README provides step-by-step instructions to clone the Game Store project, install and configure the Flask backend and React Vite frontend, view the OpenAPI contract, and test the API routes locally.  ([Getting Started - Vite](https://vite.dev/guide/?utm_source=chatgpt.com), [Quickstart — Flask Documentation (3.1.x)](https://flask.palletsprojects.com/en/stable/quickstart/?utm_source=chatgpt.com))
+A full-stack e-commerce platform for video game retail, featuring a modern React frontend and robust Flask backend with SQL Server database integration.
 
----  
+## 🌟 Overview
 
+GameStore is a comprehensive e-commerce solution that provides users with an intuitive interface for browsing, purchasing, and managing video game collections. The platform includes both customer-facing features and administrative tools for catalog management.
 
-## Prerequisites
+## ✨ Key Features
 
-1. **Node.js v18+** – Required for Vite and React development.   
-2. **npm (comes with Node.js)** – Package manager to install frontend dependencies. 
-3. **Python 3.8+** – Required to run the Flask backend. 
-4. **git** – To clone the repository.  
-5. **SQL Server** – As your database; ensure it’s running and reachable.  
+### Customer Experience
+- **Game Catalog Browsing** - Explore games with filtering by genre, price, and availability
+- **Product Details** - Comprehensive game information with cover images and descriptions  
+- **Shopping Cart** - Add, modify, and remove items with real-time stock validation
+- **Order Processing** - Complete purchase workflow with order confirmation
+- **User Authentication** - Secure registration and login system
 
----  
+### Administrative Tools
+- **Game Management** - Add new games to catalog with image uploads
+- **Inventory Control** - Real-time stock tracking and management
+- **Order Monitoring** - View and track customer orders
+- **User Management** - Customer account administration
 
+## 🛠️ Technology Stack
 
-## 1. Clone the Repository
+### Frontend
+- **React 19** - Modern UI library with latest features
+- **Vite** - Fast development server and build tool
+- **Tailwind CSS** - Utility-first styling framework
+- **React Router DOM** - Client-side routing
+- **Axios** - HTTP client for API communication
+- **Context API** - Application state management
 
+### Backend
+- **Flask 3.1.0** - Python web framework
+- **SQLAlchemy 2.0.40** - Database ORM and SQL toolkit
+- **Flask-CORS** - Cross-origin resource sharing
+- **SQL Server** - Microsoft SQL Server database
+- **pyodbc** - SQL Server connectivity driver
+
+## 📁 Project Structure
+
+```
+GameStore/
+├── frontend/                 # React frontend application
+│   ├── src/
+│   │   ├── components/      # Reusable UI components
+│   │   ├── pages/           # Page components
+│   │   └── context/         # State management
+│   └── public/
+│       └── game-covers/     # Game cover images
+├── backend/                 # Flask backend API
+│   ├── routes/              # API endpoint modules
+│   ├── app.py              # Main Flask application
+│   ├── database.py         # Database configuration
+│   └── GamestoreDB.sql     # Database schema file
+├── api-contract.md         # API documentation
+└── README.md
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js v18+** and npm
+- **Python 3.8+** 
+- **SQL Server** (local instance or cloud)
+- **git**
+
+### 1. Clone Repository
 ```bash
 git clone https://github.com/Mecha-Aima/GameStore.git
-cd game-store
+cd GameStore
 ```
----  
 
-
-## 2. Backend Setup (Flask)
-
-### 2.1 Create and Activate a Virtual Environment
-
+### 2. Database Setup
+Create a local SQL Server database and run the schema:
 ```bash
+# Use the provided SQL file to create the database structure
+# File location: backend/GamestoreDB.sql
+```
+
+### 3. Backend Setup
+```bash
+cd backend
 python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-```  
-
-### 2.2 Install Python Dependencies
-
-```bash
-pip install flask flask-cors flask-sqlalchemy pyodbc
-```  
-- **flask-cors** simplifies adding CORS support  ([flask-cors - PyPI](https://pypi.org/project/flask-cors/?utm_source=chatgpt.com), [Installation - Flask-CORS - Read the Docs](https://flask-cors.readthedocs.io/en/v1.1/?utm_source=chatgpt.com))  
-- **flask-sqlalchemy** integrates SQLAlchemy ORM with Flask  ([Install Flask-Sqlalchemy with Pip - GeeksforGeeks](https://www.geeksforgeeks.org/install-flask-sqlalchemy-with-pip/?utm_source=chatgpt.com))  
-- **pyodbc** enables connecting to SQL Server from Python  
-
-### 2.3 Configure Environment Variables
-
-Create a `.env` file in the project root with:
-
-```dotenv
-FLASK_APP=app.py
-FLASK_ENV=development
-DATABASE_URL="mssql+pyodbc://username:password@SERVER/DB?driver=ODBC+Driver+17+for+SQL+Server"
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-Install python-dotenv if needed:
-
-```bash
-pip install python-dotenv
+Create `.env` file in the backend directory:
+```env
+SERVER=localhost,1433
+DATABASE=game-store
+USERNAME=SA
+PASSWORD=<your-password>
+DRIVER=/opt/homebrew/lib/libmsodbcsql.17.dylib
 ```
 
----  
+**Database Configuration Notes:**
+- The above configuration works with **Azure Data Studio** on macOS
+- For **SSMS (SQL Server Management Studio)** users, driver path and connection parameters may differ
+- Consult SSMS-specific documentation for your environment setup
+- Ensure your SQL Server instance is running and accessible
 
-
-## 3. Frontend Setup (React + Vite)
-
-### 3.1 Initialize or Update the Vite React App
-
-If not already scaffolded, run:
-
+### 4. Frontend Setup
 ```bash
-npm create vite@latest frontend -- --template react
 cd frontend
-```  
-This command bootstraps a React project with Vite.  ([Build a React app from Scratch](https://react.dev/learn/build-a-react-app-from-scratch?utm_source=chatgpt.com), [Getting Started - Vite](https://v3.vitejs.dev/guide/?utm_source=chatgpt.com))  
-
-### 3.2 Install NPM Dependencies
-
-```bash
 npm install
 ```
 
----  
-
-
-## 4. Running the Application
-
-### 4.1 Start the Flask Backend
-
-From the project root (with the virtual env activated):
-
+### 5. Run Application
+**Backend** (from backend directory):
 ```bash
-flask --app app.py run --debug
-```  
-This launches the development server on `http://127.0.0.1:5000`.  ([Quickstart — Flask Documentation (3.1.x)](https://flask.palletsprojects.com/en/stable/quickstart/?utm_source=chatgpt.com), [How to run a flask application? - Stack Overflow](https://stackoverflow.com/questions/29882642/how-to-run-a-flask-application?utm_source=chatgpt.com))  
+python app.py
+# Runs on http://localhost:3000
+```
 
-### 4.2 Start the React Frontend
-
-In a separate terminal, navigate to the `frontend` folder:
-
+**Frontend** (from frontend directory):
 ```bash
 npm run dev
-```  
-This starts Vite’s dev server on `http://localhost:3000`. 
+# Runs on http://localhost:5173
+```
 
----  
+## 📖 API Documentation
 
+Detailed API contract available in `api-contract.md`, organized by frontend functionality:
+- Game catalog endpoints
+- User authentication
+- Cart management  
+- Order processing
+- Administrative functions
 
-## 5. Viewing the API Contract
+## 🎓 Project Learning Outcomes
 
-The API contract is defined in a human-readable **Markdown file** named `api-contract.md` located at the root of the project.
+This project was developed as a **group learning exercise** focused on full-stack web development. 
 
-### 🔍 How It’s Structured:
-The contract is organized by **frontend page/functionality** for clarity and developer collaboration:
-- **Home Page**: Game listing, filters, genre fetch
-- **Product Details Page**: Game detail retrieval
-- **Cart Page**: Add/remove/update items
-- **Order Summary Page**: Cart preview and order placement
-- **Login & Registration Page**: User authentication endpoints
+### Key Technical Learnings:
+- **Full-Stack Integration** - Connecting React frontend with Flask backend APIs
+- **Database Design** - SQL Server schema design and relationship modeling
+- **State Management** - React Context API for application-wide state
+- **Authentication Flow** - Session-based user authentication and authorization
+- **CORS Configuration** - Cross-origin resource sharing for API security
+- **RESTful API Design** - Proper HTTP methods and response structures
+- **File Upload Handling** - Image upload and storage management
+- **Error Handling** - Graceful error management across the stack
 
-### 📖 How to Use It:
-- Open `api-contract.md` in any Markdown viewer or code editor.
-- Each endpoint is shown with:
-  - **Method** (GET, POST, etc.)
-  - **Path** (e.g., `/api/games`)
-  - **Brief Description**
-  - **Parameters / Expected Body**, if applicable
+### Development Skills Gained:
+- Modern React development patterns and hooks
+- Flask application architecture and blueprints
+- SQL Server integration with Python
+- Responsive design with Tailwind CSS
+- Version control and collaborative development
+- API testing and debugging techniques
 
-Use this document to:
-- Mock backend routes before connecting to the database
-- Coordinate frontend-backend responsibilities
-- Verify that Flask routes align with frontend expectations
+---
 
----  
-
-
-## 6. Testing the API Routes
-
-You can test endpoints using **curl**, **Postman**, or your browser:
-
-```bash
-# List games
-curl http://127.0.0.1:5000/api/games
-
-# Get game by ID
-curl http://127.0.0.1:5000/api/games/1
-
-# Add to cart
-curl -X POST http://127.0.0.1:5000/api/cart \
-     -H "Content-Type: application/json" \
-     -d '{"gameId":1,"quantity":2}'
-```  
-
-- Replace mock JSON in your Flask stubs with real database queries.  
-- Implement authentication, authorization, and error handling.  
-- Expand API contract with response schemas and security schemes.  
+*This project demonstrates practical application of modern web development technologies in building a complete e-commerce solution.*
 

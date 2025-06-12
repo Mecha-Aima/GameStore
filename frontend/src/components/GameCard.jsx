@@ -1,0 +1,41 @@
+import './GameCard.css'
+import InfoBadge from './Badges'
+
+const GameCard = ({title, price, genre, imageUrl, onClick}) => {
+    const handleClick = () => {
+        console.log("GameCard clicked:", { title, price, genre });
+        onClick?.();
+    };
+
+    return (
+        <div className='game-card rounded-md cursor-pointer' onClick={handleClick}>
+            <div className="group relative block overflow-hidden rounded-md">
+                <img
+                    src={imageUrl}
+                    alt=""
+                    className="h-[600px] w-full object-cover transition duration-500 group-hover:scale-105 rounded-t-xl object-top"
+                />
+
+                <div className="relative card-content p-6">
+                    <div className="flex flex-wrap gap-2">
+                        <InfoBadge genre={genre} />
+                    </div>
+                    <h3 className="mt-4 text-lg font-medium text-white text-left">{title}</h3>
+
+                    <p className="mt-1.5 text-sm text-stone-400 text-left">Rs. {typeof price === 'number' ? price.toFixed(2) : price}</p>
+
+                    <div className="mt-4">
+                        <button
+                            className="card-btn block w-full rounded-xs p-4 text-sm font-medium transition hover:scale-105"
+                            onClick={handleClick}
+                        >
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default GameCard;

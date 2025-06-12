@@ -1,15 +1,8 @@
-/* 
-Login & Registration Page
-
-Tab Toggle: Switch between “Login” and “Register” forms
-Form Fields
-Login: Email, Password, “Remember me” checkbox
-Register: Username, Email, Password, Confirm Password
-Validation Messages: Inline errors for required fields, email format, password strength (e.g. ≥ 8 chars, mix of letters & numbers)
-Submit Button: Disabled until form is valid
-*/
-
+import './Auth.css';
 import React, { useState } from "react";
+import { useUser } from '../UserContext';
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo/logo.png';
 
 // ------------------ Utilities ------------------
 const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
@@ -27,6 +20,11 @@ function useForm(initialValues, validateFn) {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
   };
 
   const validate = () => {
@@ -40,6 +38,7 @@ function useForm(initialValues, validateFn) {
 
 // ------------------ Login Form ------------------
 function LoginForm() {
+  const navigate = useNavigate();
   const { values, errors, handleChange, validate } = useForm(
     { email: "", password: "", rememberMe: false },
     ({ email, password }) => {
@@ -52,45 +51,100 @@ function LoginForm() {
   );
 
   const { email, password, rememberMe } = values;
+  const { login } = useUser();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validate()) {
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
+      console.log("login response:", res);
+      if (res.ok) {
+        const data = await res.json();
+        
+        // Check user role for navigation
+        if (data.user.role === 'admin') {
+          // Admin users don't need customer details
+          login(data.user);
+          console.log(data.user);
+          navigate('/admin');
+        } else {
+          // Fetch customer details for non-admin users
+          let userWithCustomer = { ...data.user };
+          try {
+            const custRes = await fetch(`http://localhost:3000/api/customer?user_id=${data.user.user_id}`);
+            if (custRes.ok) {
+              const customer = await custRes.json();
+              userWithCustomer = {
+                ...userWithCustomer,
+                phone: customer.phone,
+                full_name: customer.full_name,
+                address: customer.address
+              };
+            }
+            console.log("userWithCustomer:", userWithCustomer);
+          } catch (err) {
+            // If customer fetch fails, just use user info
+          }
+          login(userWithCustomer);
+          console.log(userWithCustomer);
+          navigate('/home');
+        }
+      } else {
+        // handle error
+        console.log(`Error ${res.status}: Invalid email or password`);
+        alert('Invalid email or password');
+      }
+    }
+  };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-      <input
-        name="email"
-        value={email}
-        onChange={handleChange}
-        placeholder="Email"
-        type="email"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div>
+        <input
+          name="email"
+          value={email}
+          onChange={handleChange}
+          placeholder="Email"
+          type="email"
+          className="auth-input"
+        />
+        {errors.email && <p className="auth-error">{errors.email}</p>}
+      </div>
 
-      <input
-        name="password"
-        value={password}
-        onChange={handleChange}
-        placeholder="Password"
-        type="password"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.password && (
-        <p className="text-red-500 text-sm">{errors.password}</p>
-      )}
-
-      <label className="flex items-center gap-2 text-sm">
+      <div>
+        <input
+          name="password"
+          value={password}
+          onChange={handleChange}
+          placeholder="Password"
+          type="password"
+          className="auth-input"
+        />
+        {errors.password && <p className="auth-error">{errors.password}</p>}
+      </div>
+      
+      <label className="auth-checkbox-label">
         <input
           name="rememberMe"
           type="checkbox"
           checked={rememberMe}
           onChange={handleChange}
+          className="auth-checkbox"
         />
         Remember Me
       </label>
 
       <button
-        onClick={validate}
-        disabled={!email || !password || Object.keys(errors).length > 0}
-        className="bg-teal-50 text-white font-semibold py-2 rounded hover:bg-teal-60 transition disabled:opacity-50"
+        type="submit"
+        disabled={!email || !password}
+        className="auth-button"
       >
         Login
       </button>
@@ -99,7 +153,8 @@ function LoginForm() {
 }
 
 // ------------------ Signup Form ------------------
-function SignupForm() {
+function SignupForm({ setShowDetailsForm }) {
+  const { signup } = useUser();
   const { values, errors, handleChange, validate } = useForm(
     {
       username: "",
@@ -114,8 +169,7 @@ function SignupForm() {
       else if (!isValidEmail(email)) errs.email = "Invalid email format";
       if (!password) errs.password = "Password is required";
       else if (!isStrongPassword(password))
-        errs.password =
-          "Password must be 8+ chars, with letters & numbers";
+        errs.password = "Password must be 8+ chars, with letters & numbers";
       if (confirmPassword !== password)
         errs.confirmPassword = "Passwords do not match";
       return errs;
@@ -124,69 +178,185 @@ function SignupForm() {
 
   const { username, email, password, confirmPassword } = values;
 
-  const isFormValid =
-    username &&
-    email &&
-    password &&
-    confirmPassword &&
-    isValidEmail(email) &&
-    isStrongPassword(password) &&
-    password === confirmPassword;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validate()) {
+      try {
+        const res = await fetch('http://localhost:3000/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ username, email, password }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("signup response:", data);
+          signup(data.user);
+          setShowDetailsForm(true);
+        } else {
+          const errorData = await res.json();
+          alert(errorData.error || 'Signup failed');
+        }
+      } catch (err) {
+        alert('Signup failed. Please try again.');
+      }
+    }
+  };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-      <input
-        name="username"
-        value={username}
-        onChange={handleChange}
-        placeholder="Username"
-        type="text"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.username && (
-        <p className="text-red-500 text-sm">{errors.username}</p>
-      )}
-
-      <input
-        name="email"
-        value={email}
-        onChange={handleChange}
-        placeholder="Email"
-        type="email"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-
-      <input
-        name="password"
-        value={password}
-        onChange={handleChange}
-        placeholder="Password"
-        type="password"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.password && (
-        <p className="text-red-500 text-sm">{errors.password}</p>
-      )}
-
-      <input
-        name="confirmPassword"
-        value={confirmPassword}
-        onChange={handleChange}
-        placeholder="Confirm Password"
-        type="password"
-        className="p-3 rounded border border-navy-20 focus:outline-none focus:ring-2 focus:ring-teal-50"
-      />
-      {errors.confirmPassword && (
-        <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
-      )}
-
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div>
+        <input
+          name="username"
+          value={username}
+          onChange={handleChange}
+          placeholder="Username"
+          type="text"
+          className="auth-input"
+        />
+        {errors.username && <p className="auth-error">{errors.username}</p>}
+      </div>
+      <div>
+        <input
+          name="email"
+          value={email}
+          onChange={handleChange}
+          placeholder="Email"
+          type="email"
+          className="auth-input"
+        />
+        {errors.email && <p className="auth-error">{errors.email}</p>}
+      </div>
+      <div>
+        <input
+          name="password"
+          value={password}
+          onChange={handleChange}
+          placeholder="Password"
+          type="password"
+          className="auth-input"
+        />
+        {errors.password && <p className="auth-error">{errors.password}</p>}
+      </div>
+      <div>
+        <input
+          name="confirmPassword"
+          value={confirmPassword}
+          onChange={handleChange}
+          placeholder="Confirm Password"
+          type="password"
+          className="auth-input"
+        />
+        {errors.confirmPassword && <p className="auth-error">{errors.confirmPassword}</p>}
+      </div>
       <button
-        onClick={validate}
-        disabled={!isFormValid}
-        className="bg-teal-50 text-white font-semibold py-2 rounded hover:bg-teal-60 transition disabled:opacity-50"
+        type="submit"
+        className="auth-button"
       >
         Sign Up
+      </button>
+    </form>
+  );
+}
+
+// ------------------ Details Form ------------------
+function DetailsForm() {
+  const navigate = useNavigate();
+  const { user, signup } = useUser();
+  const [values, setValues] = useState({
+    fullName: '',
+    phone: '',
+    address: ''
+  });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    if (!values.fullName) newErrors.fullName = 'Full Name is required';
+    if (!values.phone) newErrors.phone = 'Phone No is required';
+    if (!values.address) newErrors.address = 'Address is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    setLoading(true);
+    console.log("signup form valid, submitting:", values);
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/create_customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_id: user.user_id,
+          full_name: values.fullName,
+          phone: values.phone,
+          address: values.address
+        })
+      });
+      if (res.ok) {
+        signup({ ...user, full_name: values.fullName, phone: values.phone, address: values.address });
+        console.log("details form response:", res);
+        console.log("user:", user);
+        navigate('/home');
+        alert('Account created successfully!');
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || 'Failed to create customer details');
+      }
+    } catch (err) {
+      alert('Failed to create customer details. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div>
+        <input
+          name="fullName"
+          value={values.fullName}
+          onChange={handleChange}
+          placeholder="Full Name"
+          type="text"
+          className="auth-input"
+        />
+        {errors.fullName && <p className="auth-error">{errors.fullName}</p>}
+      </div>
+      <div>
+        <input
+          name="phone"
+          value={values.phone}
+          onChange={handleChange}
+          placeholder="Phone No"
+          type="text"
+          className="auth-input"
+        />
+        {errors.phone && <p className="auth-error">{errors.phone}</p>}
+      </div>
+      <div>
+        <input
+          name="address"
+          value={values.address}
+          onChange={handleChange}
+          placeholder="Address"
+          type="text"
+          className="auth-input"
+        />
+        {errors.address && <p className="auth-error">{errors.address}</p>}
+      </div>
+      <button type="submit" className="auth-button mt-4" disabled={loading}>
+        {loading ? 'Creating...' : 'Create Account'}
       </button>
     </form>
   );
@@ -195,28 +365,29 @@ function SignupForm() {
 // ------------------ Main Auth Component ------------------
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
+  const [showDetailsForm, setShowDetailsForm] = useState(false);
 
   return (
-    <div className="bg-teal-20 text-navy-80 min-h-screen flex flex-col justify-center items-center">
-      <div className="bg-mint-10 p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-6 underline">
-          {isLogin ? "Login" : "Sign Up"}
-        </h2>
-
-        {isLogin ? <LoginForm /> : <SignupForm />}
-
-        <p className="mt-4 text-sm text-center">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-teal-50 hover:underline font-semibold"
-          >
-            {isLogin ? "Sign Up" : "Login"}
-          </button>
-        </p>
+    <div className="flex flex-col h-fit justify-center items-center gap-32">
+      <div className="auth-container mb-24 max-w-xl w-full">
+        <div className="auth-card">
+          <img src={logo} alt="PLAYTRIX" className="auth-logo" width={100} height={100} style={{ display: 'block', margin: '0 auto' }} />
+          <h2 className="auth-title">
+            {isLogin ? "Login" : showDetailsForm ? "Enter your details" : "Create Account"}
+          </h2>
+          {isLogin ? <LoginForm /> : showDetailsForm ? <DetailsForm /> : <SignupForm setShowDetailsForm={setShowDetailsForm} />}
+          <div className="auth-toggle text-slate-200">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              onClick={() => { setIsLogin(!isLogin); setShowDetailsForm(false); }}
+              className="auth-toggle-button text-teal-20"
+            >
+              {isLogin ? "Sign Up" : "Login"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
 export default Auth;

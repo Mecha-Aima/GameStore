@@ -1,8 +1,16 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   text-align: center;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .logo {
@@ -39,4 +47,11 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.navbar-container {
+  width: 100%;
+  background-color: #161616;
+  padding: 0;
+  margin: 0;
 }
